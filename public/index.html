@@ -1,0 +1,455 @@
+<!-- python -m http.server 8000 -->
+ <!-- ipconfig/ -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ماتستناش</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- مكتبة الخريطة Leaflet وتخصيصها لتطابق النمط البصري -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- إعادة التوجيه التلقائي بعد 3 ثوانٍ -->
+    <!-- <meta http-equiv="refresh" content="5;url=language.html"> -->
+</head>
+
+<body>
+
+    
+    <main class="main-content" id="main1">
+        <!-- This div wrapper is not needed and can complicate layout -->
+        <!-- <div> -->
+
+            <div class="frame-content active" id="frame-content1" style="padding: 10px 20px; gap: 20px;">
+
+                <div id="splash-screen" class="mobile-container active">
+                    <header class="header">
+                        <img src="matstanashimage.png" class="logo-image">
+                    </header>
+                </div> 
+                
+                <div id="language-screen" class="mobile-container" style="flex: 1; justify-content: space-between; width: 100%;">
+                    <header class="header">
+                        <img src="matstanashimage.png" class="logo-image">
+                    </header>
+                    
+                    <div class="language-card" style="width: 90%; max-width: 350px; border-radius: 40px;">
+                        <h2 class="lang-title" style="font-family: system-ui, -apple-system, sans-serif;">Select Language</h2>
+                        <div class="language-list">
+                                <button class="language-btn" onclick="language1begin('ar')"><span>Arabic</span> <i class="fas fa-arrow-right"></i></button>
+                                <button class="language-btn active" onclick="language1begin('en')"><span>English</span> <i class="fas fa-arrow-right"></i></button>
+                                <button class="language-btn" onclick="language1begin('fr')"><span>Français</span> <i class="fas fa-arrow-right"></i></button>  
+                        </div>
+                    </div>
+
+                    <div class="settings-footer">
+                        <div class="theme-toggle">
+                            <div class="switch-frame">
+                                <i class="fas fa-sun"></i>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                                <i class="fas fa-moon"></i>
+                            </div>
+                        </div>
+                        <p class="footer-text">PRECISION • URGENCY • RELIABILITY</p>
+                    </div>
+                </div>
+                
+                
+            </div>
+
+            <div class="frame-content" id="frame-content2" style="padding: 0; background-color: #F7F8FC; flex-direction: column; justify-content: flex-start; overflow: auto;">
+                <!-- الجزء العلوي بالخلفية البنفسجية -->
+                <div class="bg-[#1800AD] pt-16 pb-20 text-center rounded-b-[50px]">
+                    <img src="matstanashimage.png" alt="شعار ماتستناش" class="logo-image inline-block" style="width: 70%;">
+                </div>
+
+                <!-- المحتوى الرئيسي الذي يظهر فوق الخلفية الرمادية -->
+                <div class="main-content" style="padding: 0 20px 20px; height: auto; overflow-y: visible; width: 100%; justify-content: flex-start; margin-top: -80px;">
+                    <div class="login-card" style="border-radius: 40px; padding: 30px 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                        <h2 style="font-weight: 700; font-size: 1.7rem;">تسجيل الدخول</h2>
+                        <p class="subtitle" style="color: var(--placeholder-color); margin-bottom: 25px;">مرحبا بك مجددا في ماتستناش</p>
+        
+                        <form id="login-form" novalidate onclick="login1form()">
+                            <div class="input-group">
+                                <i class="fas fa-user icon"></i>
+                                <input type="text" id="username" placeholder="اسم المستخدم / البريد الإلكتروني" required>
+                                <div class="error-message"></div>
+                            </div>
+                            <div class="input-group">
+                                <i class="fas fa-lock icon"></i>
+                                <input type="password" id="password" placeholder="كلمة المرور" required>
+                                <i class="fas fa-eye icon" style="right: auto; left: 15px; cursor: pointer;"></i>
+                                <div class="error-message"></div>
+                            </div>
+                            <a href="#" class="forgot-password">نسيت كلمة المرور؟</a>
+        
+                            <button type="submit" class="btn-login">
+                                تسجيل الدخول <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </form>
+        
+                        <div class="separator" style="margin-bottom: 20px;">أو عبر</div>
+        
+                        <div class="social-login">
+                            <button class="social-btn facebook"><i class="fab fa-facebook-f"></i> Facebook</button>
+                            <button class="social-btn google"><i class="fab fa-google"></i> Google</button>
+                        </div>
+        
+                        <p class="signup-link">
+                            ليس لديك حساب؟ <button style="color: #1877F2;">إنشاء حساب جديد</button>
+                        </p>
+                    </div>
+        
+                    <!-- بطاقات المعلومات الإضافية -->
+                    <div class="info-cards-container">
+                        <div class="info-card" style="border-radius: 25px;">
+                            <span class="info-card-icon shield" style="width: 40px; height: 40px; line-height: 40px; border-radius: 12px; font-size: 20px; background-color: #E0F2F1; color: #00796B;"><i class="fas fa-shield-alt"></i></span>
+                            <p>أمان وحماية</p>
+                            <strong>مضمون</strong>
+                        </div>
+                        <div class="info-card active" style="border-radius: 25px;">
+                            <span class="info-card-icon bolt" style="width: 40px; height: 40px; line-height: 40px; border-radius: 12px; font-size: 20px; background-color: #FCB802;"><i class="fas fa-bolt"></i></span>
+                            <p>بسرعة في التنفيذ</p>
+                            <strong>فوري</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- </div> -->
+
+
+        <div  class="frame-content" id="frame-content3" style="padding: 0; background-color: #F7F8FC;"> 
+
+            <!-- حاوية تحاكي شاشة الهاتف بالكامل -->
+            <div class="w-full max-w-[390px] mx-auto bg-gray-100 flex flex-col h-screen overflow-hidden">
+                <!-- الشريط العلوي الأزرق -->
+                <header class="bg-[#1e00a3] text-white p-4 flex justify-between items-center shadow-lg z-20 flex-shrink-0">
+                    <div class="bg-yellow-400 p-2 rounded-full w-9 h-9 flex items-center justify-center">
+                        <i class="fas fa-user text-indigo-900"></i>
+                    </div>
+                    <img src="matstanashimage.png" alt="شعار ماتستناش" class="h-8">
+                    <i class="fas fa-bars text-2xl"></i>
+                </header>
+
+                <!-- المحتوى القابل للتمرير -->
+                <div class="flex-grow overflow-y-auto p-4 flex flex-col gap-5">
+                
+                <!-- الترويسة (Header) -->
+                <div class="text-center mt-2">
+                    <h2 class="text-[26px] font-extrabold text-[#d1d5db] tracking-wide leading-none">اختر موقعك</h2>
+                    <p class="text-xs text-[#d1d5db] font-medium mt-2 leading-relaxed">ساعدنا في تحديد موقعك لتقديم أفضل الخدمات</p>
+                </div>
+
+                <!-- حقل البحث المستدير المتطابق مع الصورة -->
+                <div class="relative">
+                    <input id="locationInput" type="text" 
+                        class="w-full py-4 pr-6 pl-14 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-full outline-none text-right text-gray-700 placeholder-gray-300 font-medium transition-all focus:shadow-[0_8px_30px_rgba(0,191,165,0.1)] focus:border-teal-200" 
+                        placeholder="اكتب اسم ولايتك هنا..."
+                        onkeypress="handleSearch(event)">
+                    
+                    <!-- الأيقونات التفاعلية المزدوجة على اليسار -->
+                    <div class="absolute left-5 inset-y-0 flex items-center gap-2 text-sky-400">
+                        <i class="fas fa-search cursor-pointer hover:text-sky-500 transition" onclick="triggerSearch()"></i>
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                </div>
+
+                <!-- إطار الخريطة السميك ذو اللون الرمادي المتطابق تماماً مع الصورة -->
+                <div class="relative w-full aspect-[349/320] bg-gray-300 rounded-[30px] border-[12px] border-gray-400 overflow-hidden shadow-inner">
+                    <!-- حاوية الخريطة الحقيقية -->
+                    <div id="map" class="w-full h-full z-0"></div>
+                    
+                    <!-- أزرار التحكم في التكبير المخصصة باللون الرمادي الداكن المطفأ (أسفل اليسار) -->
+                    <div class="absolute bottom-4 right-4 flex flex-col gap-1.5 z-10">
+                        <button onclick="map.zoomIn()" class="bg-[#4b5563]/90 text-white w-9 h-9 rounded-lg shadow-lg hover:bg-[#374151] transition flex items-center justify-center font-bold text-xl select-none">+</button>
+                        <button onclick="map.zoomOut()" class="bg-[#4b5563]/90 text-white w-9 h-9 rounded-lg shadow-lg hover:bg-[#374151] transition flex items-center justify-center font-bold text-xl select-none">-</button>
+                    </div>
+
+                    <!-- زر تحديد الموقع الأزرق المخصص (أسفل اليمين) -->
+                    <button onclick="resetToDefaultLocation()" class="absolute bottom-4 left-4 bg-[#3b82f6] text-white w-10 h-10 rounded-full shadow-lg hover:bg-blue-600 transition flex items-center justify-center z-10 hover:scale-105 active:scale-95">
+                        <i class="fas fa-crosshairs text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- بطاقة الحالة الذكية بلونها الفيروزي المميز والأيقونة البنفسجية -->
+                <div class="bg-[#00bfa5] rounded-[24px] p-4 flex gap-4 items-center text-white shadow-lg shadow-teal-500/10 hover:shadow-teal-500/20 transition-all duration-300">
+                    <!-- أيقونة الموقع داخل المربع البنفسجي الغامق -->
+                    <div class="bg-[#1e00a3] p-3.5 rounded-[18px] flex items-center justify-center shadow-md">
+                        <i class="fas fa-map-marker-alt text-lg text-teal-400"></i>
+                    </div>
+                    <div class="flex-1 text-right">
+                        <p class="font-bold text-sm leading-snug">تم تحديد موقعك الحالي: ولاية <span id="currentStateText">ورقلة</span></p>
+                        <p class="text-[11px] opacity-90 mt-1 leading-normal">يمكنك تغيير الموقع يدوياً عبر البحث أو اختيار ولاية من الخريطة.</p>
+                    </div>
+                </div>
+
+                <!-- زر المتابعة البرتقالي العريض المتطابق مع الصورة -->
+                <button onclick="confirmLocation()" class="w-full bg-[#ffb300] hover:bg-[#ffa000] text-gray-900 font-extrabold py-4 rounded-full shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 transition-all duration-300 flex items-center justify-center gap-2 text-[17px] active:scale-98">
+                    تأكيد المتابعة <i class="fas fa-arrow-left text-sm mr-1"></i>
+                </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="frame-content" id="frame-content4" style="padding: 0; background-color: #F7F8FC; flex-direction: column; justify-content: flex-start;"> 
+            <!-- حاوية تحاكي شاشة الهاتف بالكامل -->
+            <div class="w-full max-w-[390px] mx-auto bg-gray-100 flex flex-col h-screen overflow-hidden">
+                <!-- الشريط العلوي الأزرق -->
+                <header class="bg-[#1e00a3] text-white p-4 flex justify-between items-center shadow-lg z-10 flex-shrink-0">
+                    <div class="bg-yellow-400 p-2 rounded-full w-9 h-9 flex items-center justify-center">
+                        <i class="fas fa-user text-indigo-900"></i>
+                    </div>
+                    <img src="matstanashimage.png" alt="شعار ماتستناش" class="h-8">
+                    <i class="fas fa-bars text-2xl"></i>
+                </header>
+
+                <!-- المحتوى القابل للتمرير -->
+                <div class="flex-grow overflow-y-auto p-6" style="background-color: #ffffff;">
+                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">اختر الخدمة</h2>
+
+                    <!-- شبكة الخدمات -->
+                    <div class="grid grid-cols-2 gap-5">
+                        <!-- بطاقة الخدمة -->
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/algerie_telecom.png">
+                            <span class="service-title">اتصالات الجزائر</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/algerie_poste.png">
+                            <span class="service-title">بريد الجزائر</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/cnas.png">
+                            <span class="service-title">شركات التأمين</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/court.png">
+                            <span class="service-title">المحكمة</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/private_clinics.png">
+                            <span class="service-title">العيادات الخاصة</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/hospitals.png">
+                            <span class="service-title">المستشفيات العمومية</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/banks.png">
+                            <span class="service-title">بنوك</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/mobilis.png">
+                            <span class="service-title">وكالة موبيليس</span>
+                        </button>
+                    </div>
+
+                    <!-- ملاحظة سفلية -->
+                    <div class="mt-6 bg-yellow-100/50 border border-yellow-200/60 text-yellow-800 text-xs text-center p-3 rounded-xl flex items-center justify-center gap-2">
+                        <i class="fas fa-clock"></i>
+                        <span>جميع الخدمات يتم تنفيذها في أسرع وقت ممكن وبأعلى معايير الدقة.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="frame-content" id="frame-content5" style="padding: 0; background-color: #F7F8FC; flex-direction: column; justify-content: flex-start; align-items: stretch;">
+            <!-- Header -->
+            <header class="bg-[#1e00a3] text-white p-4 flex justify-between items-center shadow-lg w-full flex-shrink-0">
+                <div class="bg-yellow-400 p-2 rounded-full w-9 h-9 flex items-center justify-center">
+                    <i class="fas fa-user text-indigo-900"></i>
+                </div>
+                <img src="matstanashimage.png" alt="شعار ماتستناش" class="h-8">
+                <i class="fas fa-bars text-2xl"></i>
+            </header>
+
+            <!-- Main content area -->
+            <div class="p-5 flex flex-col gap-5 flex-grow">
+                <!-- Location Card -->
+                <div class="bg-gray-100 border border-gray-200 text-gray-600 font-semibold text-center p-3 rounded-lg">
+                    بريد الجزائر - ورقلة وسط المدينة
+                </div>
+
+                <!-- Current Number Card -->
+                <div class="bg-white p-6 rounded-2xl shadow-md text-center">
+                    <div class="flex justify-center items-center gap-2 text-green-500 font-bold text-sm mb-2">
+                        <span>LIVE</span>
+                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    </div>
+                    <p class="text-gray-500 text-sm mb-2">الرقم الحالي قيد الانتظار</p>
+                    <p class="text-[#1e00a3] font-extrabold text-7xl tracking-tighter">115</p>
+                </div>
+
+                <!-- QR Scan Card -->
+                <div class="bg-[#00bfa5] text-white p-8 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center flex-grow">
+                    <i class="fas fa-camera text-5xl mb-4"></i>
+                    <h3 class="text-xl font-bold">مسح كود بار / QR Code</h3>
+                    <p class="font-semibold">التذكرة</p>
+                </div>
+
+                <a href="#" class="text-center text-blue-600 font-semibold mt-2"><i class="fas fa-pencil-alt mr-1"></i> أو ادخل رقم التذكرة يدوياً</a>
+            </div>
+        </div>
+
+        <div class="frame-content" id="frame-content6" style="padding: 0; background-color: #F7F8FC; flex-direction: column; justify-content: flex-start; align-items: stretch;">
+            <!-- Header -->
+            <header class="bg-[#1e00a3] text-white p-4 flex justify-between items-center shadow-lg w-full flex-shrink-0">
+                <div class="bg-yellow-400 p-2 rounded-full w-9 h-9 flex items-center justify-center">
+                    <i class="fas fa-user text-indigo-900"></i>
+                </div>
+                <img src="matstanashimage.png" alt="شعار ماتستناش" class="h-8">
+                <i class="fas fa-bars text-2xl"></i>
+            </header>
+
+            <!-- Main content area -->
+            <div class="p-5 flex flex-col gap-4 flex-grow overflow-y-auto">
+                <!-- Your Ticket Card -->
+                <div class="bg-[#00bfa5] text-white p-5 rounded-2xl shadow-lg shadow-teal-500/20 text-center">
+                    <p class="font-semibold text-sm opacity-90">رقم التذكرة الخاص بك</p>
+                    <p class="font-extrabold text-7xl my-1">#145</p>
+                    <div class="inline-flex items-center gap-1.5 bg-white/20 text-xs font-bold px-3 py-1 rounded-full">
+                        <i class="fas fa-check-circle"></i>
+                        <span>تم تأكيد الحجز</span>
+                    </div>
+                </div>
+
+                <!-- Current Number Card -->
+                <div class="bg-white p-4 rounded-2xl shadow-md border-l-4 border-green-500 flex items-center justify-between">
+                    <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                    <div class="text-center">
+                        <p class="text-gray-500 text-sm">الرقم الحالي الذي يتم خدمته:</p>
+                        <p class="text-[#1e00a3] font-extrabold text-3xl">#120</p>
+                    </div>
+                    <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                </div>
+
+                <!-- Estimated Time Card -->
+                <div class="bg-white p-4 rounded-2xl shadow-md">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-robot text-teal-500 text-xl"></i>
+                        <p class="text-gray-500 text-xs">الوقت التقديري المتبقي <span class="font-bold">(بذكاء الاصطناعي)</span></p>
+                        <p class="mr-auto font-bold text-lg text-gray-800">25 <span class="text-xs">دقيقة</span></p>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-teal-500 h-2.5 rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+
+                <p class="text-center text-gray-600 text-sm font-semibold">عدد الأشخاص أمامك: 25 مواطن</p>
+
+                <button class="w-full bg-gray-200 text-red-500 font-bold py-3 rounded-full hover:bg-gray-300 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-times-circle"></i> إلغاء التذكرة
+                </button>
+
+                <div class="bg-indigo-100 text-indigo-800 text-xs p-3 rounded-lg flex items-start gap-2 mt-auto">
+                    <i class="fas fa-info-circle mt-0.5"></i>
+                    <p>يرجى التواجد في منطقة الانتظار قبل موعدك ب 5 دقائق. سيتم إرسال تنبيه عندما يتبقى 3 أشخاص أمامك.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="frame-content" id="frame-content7" style="padding: 20px; background-color: #F7F8FC; flex-direction: column; justify-content: flex-start; align-items: stretch; gap: 1rem;">
+            <!-- Alert Banner -->
+            <div class="bg-yellow-100 border border-yellow-300 text-yellow-800 font-bold text-sm p-3 rounded-lg flex items-center justify-center gap-2 w-full">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>تنبيه هام جدا</span>
+            </div>
+
+            <!-- Main Alert Card -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg w-full flex flex-col gap-5">
+                <h2 class="text-2xl font-extrabold text-center text-gray-800">لقد اقترب دورك!</h2>
+
+                <!-- Current Number Box -->
+                <div class="bg-yellow-50 p-4 rounded-xl text-center">
+                    <p class="text-gray-500 text-sm">الرقم الحالي الآن في الصندوق هو</p>
+                    <p class="text-[#1e00a3] font-extrabold text-7xl my-1">#141</p>
+                    <p class="text-gray-600 text-xs font-semibold">متبقى 4 أشخاص فقط وتصل إليك النوبة</p>
+                </div>
+
+                <!-- Arrival Time Slider -->
+                <div>
+                    <div class="flex justify-between items-center text-xs text-gray-500 mb-2">
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-clock"></i>
+                            <span>الوقت المتوقع للوصول للمكتب:</span>
+                        </div>
+                        <span class="font-bold text-gray-800">5 دقائق</span>
+                    </div>
+                    <div class="relative flex items-center">
+                        <i class="fas fa-map-marker-alt text-gray-400"></i>
+                        <input type="range" min="1" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mx-2" style="accent-color: #3b82f6;">
+                        <i class="fas fa-walking text-blue-500 text-lg"></i>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-3">
+                    <button class="w-full bg-[#00bfa5] text-white font-bold py-3 rounded-full hover:bg-teal-600 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-walking"></i> أنا في طريقي إلى المؤسسة
+                    </button>
+                    <button class="w-full bg-white border-2 border-teal-500 text-teal-600 font-bold py-3 rounded-full hover:bg-teal-50 transition">
+                        تمديد الدور (احتاج 5 دقائق إضافية)
+                    </button>
+                    <button class="w-full text-red-500 font-semibold py-2 hover:bg-red-50 rounded-full transition">
+                        إلغاء التذكرة
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- 000000000000000000000000000000000000000000000 -->
+        <nav class="bottom-nav" id="bottom-nav">
+            <button class="nav-item active" id="home" onclick="fnavigation1bar(1)"> <i class="fas fa-home"></i><span>الرئيسية</span></button>
+            <button class="nav-item" id="ticket" onclick="fnavigation1bar(2)"> <i class="fas fa-ticket-alt"></i><span>تذكرتي</span></button>
+            <button class="nav-item" id="bell" onclick="fnavigation1bar(3)"> <i class="fas fa-bell"></i><span>التنبيهات</span></button>
+            <button class="nav-item" id="setting" onclick="fnavigation1bar(4)"> <i class="fas fa-cog"></i><span>الإعدادات</span></button>
+        </nav>
+
+
+
+
+
+
+
+
+        <!-- نافذة إشعار منبثقة بديلة لـ alert() -->
+        <div id="customModal" class="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+            <div class="bg-white rounded-3xl max-w-xs w-full p-6 text-center shadow-2xl scale-95 transition-transform duration-300" id="modalContainer">
+                <div class="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2" id="modalTitle">تم حفظ الموقع</h3>
+                <p class="text-sm text-gray-500 mb-6" id="modalBody">تم اختيار موقعك بنجاح ومزامنته مع النظام.</p>
+                <button onclick="closeModal()" class="w-full bg-[#00bfa5] text-white font-bold py-3 rounded-full hover:bg-teal-600 transition shadow-lg shadow-teal-500/15">
+                    حسناً
+                </button>
+            </div>
+        </div>
+        <!-- </div> -->
+
+        
+
+
+    </main>
+    <!-- <div style="position: relative;top: 750px;">dvcd</div> -->
+
+
+    <!-- يمكنك استخدام JavaScript لإعادة التوجيه أيضًا -->
+     <script src="script.js"></script>
+    
+   
+</body>
+</html>
