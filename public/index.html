@@ -1,0 +1,1490 @@
+<!-- python -m http.server 8000 -->
+ <!-- ipconfig/ -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ماتستناش</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- مكتبة الخريطة Leaflet وتخصيصها لتطابق النمط البصري -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+
+    <style>
+        /* General Styles */
+
+:root {
+    --primary-blue: #1e00a3;
+    --accent-green: #2AF598;
+    --light-bg: #F7F8FC;
+    --white: #FFFFFF;
+    --text-color: #333;
+    --border-color: #E0E0E0;
+    --placeholder-color: #A0A0A0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+
+    font-family: 'Cairo', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* min-height: 100vh; */
+    max-height: 750px;
+}
+
+.main-content{
+
+    width: 100%;
+    max-width: 400px;
+    height: 100vh;
+    max-height: 750px;
+    /* height: 800px; */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* border: 10px solid blueviolet; */
+    
+}
+.main-content.active{
+    padding-bottom: 50px;
+}
+
+.frame-content{
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 10px 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    overflow: auto;
+}
+.frame-content.active{
+    display: flex;
+     /* مساحة لتجنب تداخل المحتوى مع شريط التنقل السفلي */
+}
+
+#frame-content1{
+    background-color: var(--primary-blue);
+}
+
+#frame-content2{
+    background-color: transparent;
+}
+
+#frame-content3{
+    background-color: transparent;
+}
+#frame-content4{
+    background-color: #00796B;
+}
+
+
+.mobile-container {
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+
+}
+
+.mobile-container.active{
+    display: flex;
+}
+
+/* Header */
+.header {
+    padding: 40px 20px 20px;
+    text-align: center;
+}
+
+/* New Logo Image Style */
+.logo-image {
+    width: 90%;
+    height: auto;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--white);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+/* Form Styles */
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.input-group .icon {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    color: var(--placeholder-color);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px 45px 15px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: #FDFDFD;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+}
+
+.input-group input::placeholder {
+    color: var(--placeholder-color);
+}
+
+.input-group input.is-invalid {
+    border-color: #E74C3C; /* لون أحمر للخطأ */
+}
+
+.error-message {
+    color: #E74C3C;
+    font-size: 0.8rem;
+    text-align: right;
+    padding-right: 5px;
+    height: 15px; /* حجز مساحة لتجنب اهتزاز التخطيط */
+    margin-top: 2px;
+}
+
+.forgot-password {
+    display: block;
+    text-align: left;
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+    color: var(--primary-blue);
+    text-decoration: none;
+}
+
+.btn-login {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--accent-green), #00D4B1);
+    color: var(--primary-blue);
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 15px rgba(42, 245, 152, 0.3);
+}
+
+/* Separator */
+.separator {
+    color: var(--placeholder-color);
+    margin-bottom: 20px;
+}
+
+/* Social Login */
+.social-login {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.social-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    background-color: var(--white);
+}
+
+.social-btn .fab {
+    font-size: 1.2rem;
+}
+
+.social-btn.facebook .fab {
+    color: #1877F2;
+}
+
+.social-btn.google .fab {
+    color: #DB4437;
+}
+
+/* Signup Link */
+.signup-link {
+    color: var(--placeholder-color);
+}
+
+.signup-link a {
+    color: var(--primary-blue);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+/* Language Page Styles */
+.language-card {
+    width: 100%;
+    background-color: var(--light-bg);
+    background: transparent;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    /* border-radius: 30px; */
+    background-color: var(--white);
+    border-radius: 25px;
+    padding: 20px 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.language-card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-color);
+    /* نستخدم خطًا إنجليزيًا إذا كان متاحًا */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.language-list {
+    /* flex: 1; */
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 5px;
+
+}
+.language-list button{
+    
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 30px;
+    border: 1px solid var(--border-color);
+    border-radius: 40px;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 20px;
+    font: 30px arial bold;
+    font-weight: 600;
+    transition: all 0.3s ease;
+
+}
+.language-list button.active, .language-list button:hover {
+    background-color: var(--primary-blue);
+    color: var(--white);
+    border-color: var(--primary-blue);
+}
+
+.language-list button i {
+    transition: color 0.3s ease;
+}
+
+.language-list button.active i, .language-list button:hover i {
+    color: var(--white);
+}
+
+
+.settings-footer {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--white);
+    border-radius: 10px;
+}
+
+.theme-toggle {
+    margin-bottom: 20px;
+}
+
+.footer-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: #fff;
+    opacity: 0.7;
+}
+
+/* The toggle switch */
+.switch-frame{
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 130px;
+    height: 45px;
+    background-color: rgba(0, 0, 0, 0.2);
+    font-size: 20px;
+    border-radius: 30px;
+    padding: 0 15px;
+    color: #ffeb3b;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    background-color: #e5ece8;
+    background-color: transparent;
+}
+.switch input { display: none; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 5px;
+    bottom: 5px;
+    background-color: #ffc107;
+    transition: .4s;
+    border-radius: 50%;
+}
+input:checked + .slider { background-color: #ccc; }
+input:checked + .slider:before { transform: translateX(26px); }
+
+/* Info Cards on Login Page */
+.info-cards-container {
+    display: flex;
+    gap: 15px;
+    padding: 0 20px 20px;
+    margin-top: 20px;
+}
+
+.info-card {
+    flex: 1;
+    background-color: var(--white);
+    border-radius: 20px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.info-card.active {
+    background-color: var(--primary-blue);
+    color: var(--white);
+}
+
+.info-card p {
+    font-size: 0.8rem;
+    color: var(--placeholder-color);
+}
+
+.info-card.active p {
+    color: #ddd;
+}
+
+.info-card strong {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.info-card-icon {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-style: normal;
+    font-weight: bold;
+    color: var(--white);
+}
+
+.info-card:not(.active) .info-card-icon.shield {
+    background-color: rgba(42, 245, 152, 0.2);
+    color: var(--accent-green);
+}
+
+.info-card.active .info-card-icon.bolt {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    /* width: 100%; */
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 99%;
+    /* height: 50px; */
+    max-width: 399px;
+    background-color: var(--white);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    /* flex-direction: column; */
+    justify-content: space-around;
+    /* padding: 10px 0; */
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.08);
+    border-top-left-radius : 30px;
+    border-top-right-radius: 30px;
+    z-index: 10;
+    overflow: hidden;
+}
+.bottom-nav.active{
+    display: flex;
+}
+.bottom-nav button{
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary-blue);
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font: 100% Arial bold;
+    border: none;
+    padding: 5px;
+    gap: 0px;
+    
+}
+/* .bot:hover{
+    background-color: #1877F2;
+    color: rgb(240, 180, 30);
+}tom-nav button */
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--placeholder-color);
+    font-size: 0.75rem;
+    gap: 3px;
+}
+
+.nav-item i {
+    font-size: 1.4rem;
+}
+.nav-item:hover{
+    background-color: #1877F2;
+    color: rgb(240, 180, 30);
+}
+
+.nav-item.active {
+    color: var(--primary-blue);
+    color: rgb(240, 180, 30);
+
+}
+
+/* Home Screen Header */
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 20px;
+    background-color: var(--primary-blue);
+    color: var(--white);
+}
+
+.user-greeting p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0;
+}
+
+.user-greeting h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.user-avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid var(--white);
+}
+
+/* Search Bar */
+.search-bar {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.search-bar i {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    color: var(--placeholder-color);
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 15px 45px 15px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--white);
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+}
+
+/* Filter Tabs */
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    overflow-x: auto; /* للسماح بالتمرير الأفقي على الشاشات الصغيرة */
+    padding-bottom: 10px; /* مساحة بسيطة تحت الأزرار */
+}
+
+/* لإخفاء شريط التمرير */
+.filter-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background-color: var(--white);
+    color: var(--text-color);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap; /* لمنع التفاف النص داخل الزر */
+}
+
+.filter-btn.active {
+    background-color: var(--primary-blue);
+    color: var(--white);
+    border-color: var(--primary-blue);
+}
+
+/* Institution List */
+.institution-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.institution-card {
+    display: flex;
+    align-items: center;
+    background-color: var(--white);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.institution-logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    margin-left: 15px;
+}
+
+.institution-details {
+    flex-grow: 1;
+}
+
+.institution-details h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.institution-details p {
+    font-size: 0.8rem;
+    color: var(--placeholder-color);
+}
+
+.institution-status {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+.institution-status.open {
+    color: #27AE60;
+    background-color: rgba(39, 174, 96, 0.1);
+}
+
+.institution-status.closed {
+    color: #E74C3C;
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+/* ======================================= */
+
+/* ewrwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww */
+/* ewrwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww */
+/* ewrwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww */
+/* ewrwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww */
+
+.leaflet-control-zoom {
+    display: none !important;
+}
+.leaflet-attribution-flag {
+    display: none !important;
+}
+/* تأثير النبض للعلامة المحددة في ورقلة */
+.pulse-ring {
+    border: 3px solid #00bfa5;
+    -webkit-border-radius: 30px;
+    height: 48px;
+    width: 48px;
+    position: absolute;
+    left: -14px;
+    top: -14px;
+    animation: pulsate 1.8s ease-out;
+    animation-iteration-count: infinite; 
+    opacity: 0.0;
+}
+@keyframes pulsate {
+    0% {-webkit-transform: scale(0.1, 0.1); opacity: 0.0;}
+    50% {opacity: 1.0;}
+    100% {-webkit-transform: scale(1.2, 1.2); opacity: 0.0;}
+}
+
+/* ============================================ */
+/* ============================================ */
+/* ============================================ */
+
+.service-card{
+
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    padding: 10px;
+    /* font-family: ; */
+    font:11px 'Cairo' bold;
+    font-weight:700;
+    color: #1e00a3;
+
+}
+.service-card:hover{
+    background-color: #eef5f4;
+}
+
+
+
+    </style>
+    
+    <!-- إعادة التوجيه التلقائي بعد 3 ثوانٍ -->
+    <!-- <meta http-equiv="refresh" content="5;url=language.html"> -->
+</head>
+
+<body>
+
+    
+    <main class="main-content" id="main1">
+        <!-- This div wrapper is not needed and can complicate layout -->
+        <!-- <div> -->
+
+            <div class="frame-content active" id="frame-content1" style="padding: 10px 20px; gap: 20px;">
+
+                <div id="splash-screen" class="mobile-container active">
+                    <header class="header">
+                        <img src="matstanashimage.png" class="logo-image">
+                    </header>
+                </div> 
+                
+                <div id="language-screen" class="mobile-container" style="flex: 1; justify-content: space-between; width: 100%;">
+                    <header class="header">
+                        <img src="matstanashimage.png" class="logo-image">
+                    </header>
+                    
+                    <div class="language-card" style="width: 90%; max-width: 350px; border-radius: 40px;">
+                        <h2 class="lang-title" style="font-family: system-ui, -apple-system, sans-serif;">Select Language</h2>
+                        <div class="language-list">
+                                <button class="language-btn" onclick="language1begin('ar')"><span>Arabic</span> <i class="fas fa-arrow-right"></i></button>
+                                <button class="language-btn active" onclick="language1begin('en')"><span>English</span> <i class="fas fa-arrow-right"></i></button>
+                                <button class="language-btn" onclick="language1begin('fr')"><span>Français</span> <i class="fas fa-arrow-right"></i></button>  
+                        </div>
+                    </div>
+
+                    <div class="settings-footer">
+                        <div class="theme-toggle">
+                            <div class="switch-frame">
+                                <i class="fas fa-sun"></i>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                                <i class="fas fa-moon"></i>
+                            </div>
+                        </div>
+                        <p class="footer-text">PRECISION • URGENCY • RELIABILITY</p>
+                    </div>
+                </div>
+                
+                
+            </div>
+
+            <div class="frame-content" id="frame-content2" style="padding: 0; background-color: #F7F8FC; flex-direction: column; justify-content: flex-start; overflow: auto;">
+                <!-- الجزء العلوي بالخلفية البنفسجية -->
+                <div class="bg-[#1800AD] pt-16 pb-20 text-center rounded-b-[50px]">
+                    <img src="matstanashimage.png" alt="شعار ماتستناش" class="logo-image inline-block" style="width: 70%;">
+                </div>
+
+                <!-- المحتوى الرئيسي الذي يظهر فوق الخلفية الرمادية -->
+                <div class="main-content" style="padding: 0 20px 20px; height: auto; overflow-y: visible; width: 100%; justify-content: flex-start; margin-top: -80px;">
+                    <div class="login-card" style="border-radius: 40px; padding: 30px 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                        <h2 style="font-weight: 700; font-size: 1.7rem;">تسجيل الدخول</h2>
+                        <p class="subtitle" style="color: var(--placeholder-color); margin-bottom: 25px;">مرحبا بك مجددا في ماتستناش</p>
+        
+                        <form id="login-form" novalidate onclick="login1form()">
+                            <div class="input-group">
+                                <i class="fas fa-user icon"></i>
+                                <input type="text" id="username" placeholder="اسم المستخدم / البريد الإلكتروني" required>
+                                <div class="error-message"></div>
+                            </div>
+                            <div class="input-group">
+                                <i class="fas fa-lock icon"></i>
+                                <input type="password" id="password" placeholder="كلمة المرور" required>
+                                <i class="fas fa-eye icon" style="right: auto; left: 15px; cursor: pointer;"></i>
+                                <div class="error-message"></div>
+                            </div>
+                            <a href="#" class="forgot-password">نسيت كلمة المرور؟</a>
+        
+                            <button type="submit" class="btn-login">
+                                تسجيل الدخول <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </form>
+        
+                        <div class="separator" style="margin-bottom: 20px;">أو عبر</div>
+        
+                        <div class="social-login">
+                            <button class="social-btn facebook"><i class="fab fa-facebook-f"></i> Facebook</button>
+                            <button class="social-btn google"><i class="fab fa-google"></i> Google</button>
+                        </div>
+        
+                        <p class="signup-link">
+                            ليس لديك حساب؟ <button style="color: #1877F2;">إنشاء حساب جديد</button>
+                        </p>
+                    </div>
+        
+                    <!-- بطاقات المعلومات الإضافية -->
+                    <div class="info-cards-container">
+                        <div class="info-card" style="border-radius: 25px;">
+                            <span class="info-card-icon shield" style="width: 40px; height: 40px; line-height: 40px; border-radius: 12px; font-size: 20px; background-color: #E0F2F1; color: #00796B;"><i class="fas fa-shield-alt"></i></span>
+                            <p>أمان وحماية</p>
+                            <strong>مضمون</strong>
+                        </div>
+                        <div class="info-card active" style="border-radius: 25px;">
+                            <span class="info-card-icon bolt" style="width: 40px; height: 40px; line-height: 40px; border-radius: 12px; font-size: 20px; background-color: #FCB802;"><i class="fas fa-bolt"></i></span>
+                            <p>بسرعة في التنفيذ</p>
+                            <strong>فوري</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- </div> -->
+
+
+        <div  class="frame-content" id="frame-content3" style="padding: 0; background-color: #F7F8FC;"> 
+
+            <!-- حاوية تحاكي شاشة الهاتف بالكامل -->
+            <div class="w-full max-w-[390px] mx-auto bg-gray-100 flex flex-col h-screen overflow-hidden">
+                <!-- الشريط العلوي الأزرق -->
+                <header class="bg-[#1e00a3] text-white p-4 flex justify-between items-center shadow-lg z-20 flex-shrink-0">
+                    <div class="bg-yellow-400 p-2 rounded-full w-9 h-9 flex items-center justify-center">
+                        <i class="fas fa-user text-indigo-900"></i>
+                    </div>
+                    <img src="matstanashimage.png" alt="شعار ماتستناش" class="h-8">
+                    <i class="fas fa-bars text-2xl"></i>
+                </header>
+
+                <!-- المحتوى القابل للتمرير -->
+                <div class="flex-grow overflow-y-auto p-4 flex flex-col gap-5">
+                
+                <!-- الترويسة (Header) -->
+                <div class="text-center mt-2">
+                    <h2 class="text-[26px] font-extrabold text-[#d1d5db] tracking-wide leading-none">اختر موقعك</h2>
+                    <p class="text-xs text-[#d1d5db] font-medium mt-2 leading-relaxed">ساعدنا في تحديد موقعك لتقديم أفضل الخدمات</p>
+                </div>
+
+                <!-- حقل البحث المستدير المتطابق مع الصورة -->
+                <div class="relative">
+                    <input id="locationInput" type="text" 
+                        class="w-full py-4 pr-6 pl-14 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-full outline-none text-right text-gray-700 placeholder-gray-300 font-medium transition-all focus:shadow-[0_8px_30px_rgba(0,191,165,0.1)] focus:border-teal-200" 
+                        placeholder="اكتب اسم ولايتك هنا..."
+                        onkeypress="handleSearch(event)">
+                    
+                    <!-- الأيقونات التفاعلية المزدوجة على اليسار -->
+                    <div class="absolute left-5 inset-y-0 flex items-center gap-2 text-sky-400">
+                        <i class="fas fa-search cursor-pointer hover:text-sky-500 transition" onclick="triggerSearch()"></i>
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                </div>
+
+                <!-- إطار الخريطة السميك ذو اللون الرمادي المتطابق تماماً مع الصورة -->
+                <div class="relative w-full aspect-[349/320] bg-gray-300 rounded-[30px] border-[12px] border-gray-400 overflow-hidden shadow-inner">
+                    <!-- حاوية الخريطة الحقيقية -->
+                    <div id="map" class="w-full h-full z-0"></div>
+                    
+                    <!-- أزرار التحكم في التكبير المخصصة باللون الرمادي الداكن المطفأ (أسفل اليسار) -->
+                    <div class="absolute bottom-4 right-4 flex flex-col gap-1.5 z-10">
+                        <button onclick="map.zoomIn()" class="bg-[#4b5563]/90 text-white w-9 h-9 rounded-lg shadow-lg hover:bg-[#374151] transition flex items-center justify-center font-bold text-xl select-none">+</button>
+                        <button onclick="map.zoomOut()" class="bg-[#4b5563]/90 text-white w-9 h-9 rounded-lg shadow-lg hover:bg-[#374151] transition flex items-center justify-center font-bold text-xl select-none">-</button>
+                    </div>
+
+                    <!-- زر تحديد الموقع الأزرق المخصص (أسفل اليمين) -->
+                    <button onclick="resetToDefaultLocation()" class="absolute bottom-4 left-4 bg-[#3b82f6] text-white w-10 h-10 rounded-full shadow-lg hover:bg-blue-600 transition flex items-center justify-center z-10 hover:scale-105 active:scale-95">
+                        <i class="fas fa-crosshairs text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- بطاقة الحالة الذكية بلونها الفيروزي المميز والأيقونة البنفسجية -->
+                <div class="bg-[#00bfa5] rounded-[24px] p-4 flex gap-4 items-center text-white shadow-lg shadow-teal-500/10 hover:shadow-teal-500/20 transition-all duration-300">
+                    <!-- أيقونة الموقع داخل المربع البنفسجي الغامق -->
+                    <div class="bg-[#1e00a3] p-3.5 rounded-[18px] flex items-center justify-center shadow-md">
+                        <i class="fas fa-map-marker-alt text-lg text-teal-400"></i>
+                    </div>
+                    <div class="flex-1 text-right">
+                        <p class="font-bold text-sm leading-snug">تم تحديد موقعك الحالي: ولاية <span id="currentStateText">ورقلة</span></p>
+                        <p class="text-[11px] opacity-90 mt-1 leading-normal">يمكنك تغيير الموقع يدوياً عبر البحث أو اختيار ولاية من الخريطة.</p>
+                    </div>
+                </div>
+
+                <!-- زر المتابعة البرتقالي العريض المتطابق مع الصورة -->
+                <button onclick="confirmLocation()" class="w-full bg-[#ffb300] hover:bg-[#ffa000] text-gray-900 font-extrabold py-4 rounded-full shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 transition-all duration-300 flex items-center justify-center gap-2 text-[17px] active:scale-98">
+                    تأكيد المتابعة <i class="fas fa-arrow-left text-sm mr-1"></i>
+                </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="frame-content" id="frame-content4" style="padding: 0; background-color: #F7F8FC; flex-direction: column; justify-content: flex-start;"> 
+            <!-- حاوية تحاكي شاشة الهاتف بالكامل -->
+            <div class="w-full max-w-[390px] mx-auto bg-gray-100 flex flex-col h-screen overflow-hidden">
+                <!-- الشريط العلوي الأزرق -->
+                <header class="bg-[#1e00a3] text-white p-4 flex justify-between items-center shadow-lg z-10 flex-shrink-0">
+                    <div class="bg-yellow-400 p-2 rounded-full w-9 h-9 flex items-center justify-center">
+                        <i class="fas fa-user text-indigo-900"></i>
+                    </div>
+                    <img src="matstanashimage.png" alt="شعار ماتستناش" class="h-8">
+                    <i class="fas fa-bars text-2xl"></i>
+                </header>
+
+                <!-- المحتوى القابل للتمرير -->
+                <div class="flex-grow overflow-y-auto p-6" style="background-color: #ffffff;">
+                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">اختر الخدمة</h2>
+
+                    <!-- شبكة الخدمات -->
+                    <div class="grid grid-cols-2 gap-5">
+                        <!-- بطاقة الخدمة -->
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/algerie_telecom.png">
+                            <span class="service-title">اتصالات الجزائر</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/algerie_poste.png">
+                            <span class="service-title">بريد الجزائر</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/cnas.png">
+                            <span class="service-title">شركات التأمين</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/court.png">
+                            <span class="service-title">المحكمة</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/private_clinics.png">
+                            <span class="service-title">العيادات الخاصة</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/hospitals.png">
+                            <span class="service-title">المستشفيات العمومية</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/banks.png">
+                            <span class="service-title">بنوك</span>
+                        </button>
+                        <button class="service-card" onclick="fticektselection()">
+                            <img src="ServicesFolder/mobilis.png">
+                            <span class="service-title">وكالة موبيليس</span>
+                        </button>
+                    </div>
+
+                    <!-- ملاحظة سفلية -->
+                    <div class="mt-6 bg-yellow-100/50 border border-yellow-200/60 text-yellow-800 text-xs text-center p-3 rounded-xl flex items-center justify-center gap-2">
+                        <i class="fas fa-clock"></i>
+                        <span>جميع الخدمات يتم تنفيذها في أسرع وقت ممكن وبأعلى معايير الدقة.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="frame-content" id="frame-content5" style="padding: 0; background-color: #F7F8FC; flex-direction: column; justify-content: flex-start; align-items: stretch;">
+            <!-- Header -->
+            <header class="bg-[#1e00a3] text-white p-4 flex justify-between items-center shadow-lg w-full flex-shrink-0">
+                <div class="bg-yellow-400 p-2 rounded-full w-9 h-9 flex items-center justify-center">
+                    <i class="fas fa-user text-indigo-900"></i>
+                </div>
+                <img src="matstanashimage.png" alt="شعار ماتستناش" class="h-8">
+                <i class="fas fa-bars text-2xl"></i>
+            </header>
+
+            <!-- Main content area -->
+            <div class="p-5 flex flex-col gap-5 flex-grow">
+                <!-- Location Card -->
+                <div class="bg-gray-100 border border-gray-200 text-gray-600 font-semibold text-center p-3 rounded-lg">
+                    بريد الجزائر - ورقلة وسط المدينة
+                </div>
+
+                <!-- Current Number Card -->
+                <div class="bg-white p-6 rounded-2xl shadow-md text-center">
+                    <div class="flex justify-center items-center gap-2 text-green-500 font-bold text-sm mb-2">
+                        <span>LIVE</span>
+                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    </div>
+                    <p class="text-gray-500 text-sm mb-2">الرقم الحالي قيد الانتظار</p>
+                    <p class="text-[#1e00a3] font-extrabold text-7xl tracking-tighter">115</p>
+                </div>
+
+                <!-- QR Scan Card -->
+                <div class="bg-[#00bfa5] text-white p-8 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center flex-grow">
+                    <i class="fas fa-camera text-5xl mb-4"></i>
+                    <h3 class="text-xl font-bold">مسح كود بار / QR Code</h3>
+                    <p class="font-semibold">التذكرة</p>
+                </div>
+
+                <a href="#" class="text-center text-blue-600 font-semibold mt-2"><i class="fas fa-pencil-alt mr-1"></i> أو ادخل رقم التذكرة يدوياً</a>
+            </div>
+        </div>
+
+        <div class="frame-content" id="frame-content6" style="padding: 0; background-color: #F7F8FC; flex-direction: column; justify-content: flex-start; align-items: stretch;">
+            <!-- Header -->
+            <header class="bg-[#1e00a3] text-white p-4 flex justify-between items-center shadow-lg w-full flex-shrink-0">
+                <div class="bg-yellow-400 p-2 rounded-full w-9 h-9 flex items-center justify-center">
+                    <i class="fas fa-user text-indigo-900"></i>
+                </div>
+                <img src="matstanashimage.png" alt="شعار ماتستناش" class="h-8">
+                <i class="fas fa-bars text-2xl"></i>
+            </header>
+
+            <!-- Main content area -->
+            <div class="p-5 flex flex-col gap-4 flex-grow overflow-y-auto">
+                <!-- Your Ticket Card -->
+                <div class="bg-[#00bfa5] text-white p-5 rounded-2xl shadow-lg shadow-teal-500/20 text-center">
+                    <p class="font-semibold text-sm opacity-90">رقم التذكرة الخاص بك</p>
+                    <p class="font-extrabold text-7xl my-1">#145</p>
+                    <div class="inline-flex items-center gap-1.5 bg-white/20 text-xs font-bold px-3 py-1 rounded-full">
+                        <i class="fas fa-check-circle"></i>
+                        <span>تم تأكيد الحجز</span>
+                    </div>
+                </div>
+
+                <!-- Current Number Card -->
+                <div class="bg-white p-4 rounded-2xl shadow-md border-l-4 border-green-500 flex items-center justify-between">
+                    <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                    <div class="text-center">
+                        <p class="text-gray-500 text-sm">الرقم الحالي الذي يتم خدمته:</p>
+                        <p class="text-[#1e00a3] font-extrabold text-3xl">#120</p>
+                    </div>
+                    <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                </div>
+
+                <!-- Estimated Time Card -->
+                <div class="bg-white p-4 rounded-2xl shadow-md">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-robot text-teal-500 text-xl"></i>
+                        <p class="text-gray-500 text-xs">الوقت التقديري المتبقي <span class="font-bold">(بذكاء الاصطناعي)</span></p>
+                        <p class="mr-auto font-bold text-lg text-gray-800">25 <span class="text-xs">دقيقة</span></p>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-teal-500 h-2.5 rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+
+                <p class="text-center text-gray-600 text-sm font-semibold">عدد الأشخاص أمامك: 25 مواطن</p>
+
+                <button class="w-full bg-gray-200 text-red-500 font-bold py-3 rounded-full hover:bg-gray-300 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-times-circle"></i> إلغاء التذكرة
+                </button>
+
+                <div class="bg-indigo-100 text-indigo-800 text-xs p-3 rounded-lg flex items-start gap-2 mt-auto">
+                    <i class="fas fa-info-circle mt-0.5"></i>
+                    <p>يرجى التواجد في منطقة الانتظار قبل موعدك ب 5 دقائق. سيتم إرسال تنبيه عندما يتبقى 3 أشخاص أمامك.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="frame-content" id="frame-content7" style="padding: 20px; background-color: #F7F8FC; flex-direction: column; justify-content: flex-start; align-items: stretch; gap: 1rem;">
+            <!-- Alert Banner -->
+            <div class="bg-yellow-100 border border-yellow-300 text-yellow-800 font-bold text-sm p-3 rounded-lg flex items-center justify-center gap-2 w-full">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>تنبيه هام جدا</span>
+            </div>
+
+            <!-- Main Alert Card -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg w-full flex flex-col gap-5">
+                <h2 class="text-2xl font-extrabold text-center text-gray-800">لقد اقترب دورك!</h2>
+
+                <!-- Current Number Box -->
+                <div class="bg-yellow-50 p-4 rounded-xl text-center">
+                    <p class="text-gray-500 text-sm">الرقم الحالي الآن في الصندوق هو</p>
+                    <p class="text-[#1e00a3] font-extrabold text-7xl my-1">#141</p>
+                    <p class="text-gray-600 text-xs font-semibold">متبقى 4 أشخاص فقط وتصل إليك النوبة</p>
+                </div>
+
+                <!-- Arrival Time Slider -->
+                <div>
+                    <div class="flex justify-between items-center text-xs text-gray-500 mb-2">
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-clock"></i>
+                            <span>الوقت المتوقع للوصول للمكتب:</span>
+                        </div>
+                        <span class="font-bold text-gray-800">5 دقائق</span>
+                    </div>
+                    <div class="relative flex items-center">
+                        <i class="fas fa-map-marker-alt text-gray-400"></i>
+                        <input type="range" min="1" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mx-2" style="accent-color: #3b82f6;">
+                        <i class="fas fa-walking text-blue-500 text-lg"></i>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-3">
+                    <button class="w-full bg-[#00bfa5] text-white font-bold py-3 rounded-full hover:bg-teal-600 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-walking"></i> أنا في طريقي إلى المؤسسة
+                    </button>
+                    <button class="w-full bg-white border-2 border-teal-500 text-teal-600 font-bold py-3 rounded-full hover:bg-teal-50 transition">
+                        تمديد الدور (احتاج 5 دقائق إضافية)
+                    </button>
+                    <button class="w-full text-red-500 font-semibold py-2 hover:bg-red-50 rounded-full transition">
+                        إلغاء التذكرة
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- 000000000000000000000000000000000000000000000 -->
+        <nav class="bottom-nav" id="bottom-nav">
+            <button class="nav-item active" id="home" onclick="fnavigation1bar(1)"> <i class="fas fa-home"></i><span>الرئيسية</span></button>
+            <button class="nav-item" id="ticket" onclick="fnavigation1bar(2)"> <i class="fas fa-ticket-alt"></i><span>تذكرتي</span></button>
+            <button class="nav-item" id="bell" onclick="fnavigation1bar(3)"> <i class="fas fa-bell"></i><span>التنبيهات</span></button>
+            <button class="nav-item" id="setting" onclick="fnavigation1bar(4)"> <i class="fas fa-cog"></i><span>الإعدادات</span></button>
+        </nav>
+
+
+
+
+
+
+
+
+        <!-- نافذة إشعار منبثقة بديلة لـ alert() -->
+        <div id="customModal" class="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+            <div class="bg-white rounded-3xl max-w-xs w-full p-6 text-center shadow-2xl scale-95 transition-transform duration-300" id="modalContainer">
+                <div class="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2" id="modalTitle">تم حفظ الموقع</h3>
+                <p class="text-sm text-gray-500 mb-6" id="modalBody">تم اختيار موقعك بنجاح ومزامنته مع النظام.</p>
+                <button onclick="closeModal()" class="w-full bg-[#00bfa5] text-white font-bold py-3 rounded-full hover:bg-teal-600 transition shadow-lg shadow-teal-500/15">
+                    حسناً
+                </button>
+            </div>
+        </div>
+        <!-- </div> -->
+
+        
+
+
+    </main>
+    <!-- <div style="position: relative;top: 750px;">dvcd</div> -->
+
+
+    <!-- يمكنك استخدام JavaScript لإعادة التوجيه أيضًا -->
+    <script>
+        
+        setTimeout(() => {
+            document.getElementById('splash-screen').classList.remove('active');
+            document.getElementById('language-screen').classList.add('active');
+        }, 2000); // عرض شاشة البداية لمدة ثانيتين
+
+        function language1begin(element1lang){
+            // تحديث حالة الأزرار النشطة
+            document.querySelectorAll('.language-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            document.documentElement.lang = element1lang;
+            document.documentElement.dir = (element1lang === 'ar') ? 'rtl' : 'ltr';
+
+            // ترجمة واجهة المستخدم بناءً على اللغة
+            const translations = {
+                en: { title: 'Select Language' },
+                ar: { title: 'اختر اللغة' },
+                fr: { title: 'Choisir la langue' }
+            };
+            
+            document.querySelector('.lang-title').innerText = translations[element1lang].title;
+
+            // الانتظار قليلاً قبل الانتقال للشاشة التالية
+            setTimeout(showLoginScreen, 300);
+        }
+
+        function showLoginScreen() {
+            document.getElementById('frame-content1').classList.remove('active');
+            document.getElementById('frame-content3').classList.remove('active');
+            document.getElementById('frame-content2').classList.add('active');
+            document.getElementById('bottom-nav').classList.add('active');
+        }
+
+        // 000000000000000000000000000000000000000000000000000
+        // 000000000000000000000000000000000000000000000000000
+        // 000000000000000000000000000000000000000000000000000
+        
+        function login1form(){
+            
+            document.getElementById('frame-content1').classList.remove('active');
+            document.getElementById('frame-content2').classList.remove('active');
+            document.getElementById('frame-content3').classList.add('active');
+            document.getElementById('bottom-nav').classList.add('active');
+
+
+        }
+
+        // ==============================================================
+        // ==============================================================
+        // ==============================================================
+        let map;
+        let currentMarker;
+        let currentLatLng = [31.9493, 5.3250]; // ورقلة كقيمة افتراضية
+        let currentCityName = "ورقلة";
+
+        // تهيئة الخريطة عند تحميل الصفحة
+        window.onload = function() {
+            initMap();
+        };
+
+        function initMap() {
+            // إعداد خريطة هادئة وجميلة تحاكي المظهر المتناسق للصورة (CartoDB Positron)
+            map = L.map('map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView(currentLatLng, 12);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19
+            }).addTo(map);
+
+            updateMarker(currentLatLng, currentCityName);
+
+            // تفعيل ميزة النقر على الخريطة لتغيير الموقع تلقائياً
+            map.on('click', async function(e) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                currentLatLng = [lat, lng];
+                
+                // محاولة جلب اسم المكان من الإحداثيات (Reverse Geocoding) باستخدام API مجاني
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`);
+                    const data = await response.json();
+                    if (data && data.address) {
+                        const city = data.address.state || data.address.city || data.address.town || "موقع مخصص";
+                        currentCityName = city.replace("ولاية ", "");
+                    } else {
+                        currentCityName = "موقع مخصص";
+                    }
+                } catch (error) {
+                    currentCityName = "موقع محدد";
+                }
+
+                updateMarker(currentLatLng, currentCityName);
+                updateUIForLocation(currentCityName);
+            });
+        }
+
+        // تحديث العلامة المخصصة على الخريطة
+        function updateMarker(latlng, label) {
+            if (currentMarker) {
+                map.removeLayer(currentMarker);
+            }
+
+            // أيقونة مخصصة رائعة تتطابق مع لون التصميم الفيروزي وعلامة ورقلة بالصورة
+            const customIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `
+                    <div class="relative flex flex-col items-center">
+                        <div class="bg-[#1e293b] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md whitespace-nowrap mb-1 border border-teal-400">
+                            ${label}
+                        </div>
+                        <div class="relative flex items-center justify-center">
+                            <div class="pulse-ring"></div>
+                            <div class="w-5 h-5 bg-[#00bfa5] rounded-full border-2 border-white shadow-lg flex items-center justify-center">
+                                <div class="w-2 h-2 bg-white rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                iconSize: [80, 50],
+                iconAnchor: [40, 45]
+            });
+
+            currentMarker = L.marker(latlng, { icon: customIcon }).addTo(map);
+            map.setView(latlng, map.getZoom());
+        }
+
+        // تحديث نصوص الواجهة
+        function updateUIForLocation(name) {
+            document.getElementById('currentStateText').innerText = name;
+            document.getElementById('locationInput').value = name;
+        }
+
+        // إعادة التعيين للموقع الافتراضي (ورقلة) عند الضغط على زر الكروسهير
+        function resetToDefaultLocation() {
+            currentLatLng = [31.9493, 5.3250];
+            currentCityName = "ورقلة";
+            map.setView(currentLatLng, 12);
+            updateMarker(currentLatLng, currentCityName);
+            updateUIForLocation(currentCityName);
+        }
+
+        // البحث عن مكان وتحريك الخريطة إليه (Geocoding)
+        async function triggerSearch() {
+            const query = document.getElementById('locationInput').value.trim();
+            if (!query) return;
+
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', الجزائر')}&accept-language=ar&limit=1`);
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    currentLatLng = [lat, lon];
+                    
+                    // استخلاص الاسم بطريقة أنظف
+                    let name = data[0].display_name.split(',')[0];
+                    currentCityName = name.replace("ولاية ", "");
+                    
+                    updateMarker(currentLatLng, currentCityName);
+                    updateUIForLocation(currentCityName);
+                    map.setView(currentLatLng, 11);
+                } else {
+                    showCustomModal("تنبيه", "عذراً، لم نتمكن من العثور على هذا الموقع بالجزائر. يرجى التحقق من الاسم المدخل.");
+                }
+            } catch (error) {
+                showCustomModal("خطأ", "حدث عطل أثناء الاتصال بخدمة البحث.");
+            }
+        }
+
+        function handleSearch(e) {
+            if (e.key === 'Enter') {
+                triggerSearch();
+            }
+        }
+
+        // نافذة تأكيد مخصصة ومصقولة عند النقر على "تأكيد المتابعة"
+        function confirmLocation() {
+            showCustomModal("تم تأكيد الموقع", `لقد قمت باختيار ولاية <strong>${currentCityName}</strong> كموقعك الحالي للخدمات بنجاح.`);
+        }
+
+        function showCustomModal(title, text) {
+            const modal = document.getElementById('customModal');
+            const container = document.getElementById('modalContainer');
+            document.getElementById('modalTitle').innerHTML = title;
+            document.getElementById('modalBody').innerHTML = text;
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                container.classList.remove('scale-95');
+                container.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.add('opacity-0');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+
+            document.getElementById('frame-content1').classList.remove('active');
+            document.getElementById('frame-content2').classList.remove('active');
+            document.getElementById('frame-content3').classList.remove('active');
+            document.getElementById('frame-content4').classList.add('active');
+            document.getElementById('bottom-nav').classList.add('active');
+
+
+        }
+
+        // =======================================================
+        // =======================================================
+        // =======================================================
+        
+        function fticektselection(){
+
+            document.getElementById('frame-content1').classList.remove('active');
+            document.getElementById('frame-content2').classList.remove('active');
+            document.getElementById('frame-content3').classList.remove('active');
+            document.getElementById('frame-content4').classList.remove('active');
+            document.getElementById('frame-content5').classList.add('active');
+            document.getElementById('bottom-nav').classList.add('active');
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // =======================================================
+        // =======================================================
+        // =======================================================
+        // =======================================================
+        // =======================================================
+
+        function fnavigation1bar(numberb){
+
+            const Home    = document.getElementById('home'); 
+            const Ticket  = document.getElementById('ticket'); 
+            const Bell    = document.getElementById('bell'); 
+            const Setting = document.getElementById('setting'); 
+
+            if(numberb===1){
+                Ticket.classList.remove('active');
+                Bell.classList.remove('active');
+                Setting.classList.remove('active');
+                Home.classList.add('active');
+
+
+                document.getElementById('frame-content1').classList.remove('active');
+                document.getElementById('frame-content2').classList.remove('active');
+                document.getElementById('frame-content3').classList.remove('active');
+                // document.getElementById('frame-content4').classList.remove('active');
+                document.getElementById('frame-content5').classList.remove('active');
+                document.getElementById('frame-content6').classList.remove('active');
+                document.getElementById('frame-content7').classList.remove('active');
+                document.getElementById('frame-content4').classList.add('active');
+                document.getElementById('bottom-nav').classList.add('active');
+
+            }
+
+            else if(numberb===2){
+                Home.classList.remove('active');
+                Bell.classList.remove('active');
+                Setting.classList.remove('active');
+                Ticket.classList.add('active');
+
+                document.getElementById('frame-content1').classList.remove('active');
+                document.getElementById('frame-content2').classList.remove('active');
+                document.getElementById('frame-content3').classList.remove('active');
+                document.getElementById('frame-content4').classList.remove('active');
+                document.getElementById('frame-content5').classList.remove('active');
+                document.getElementById('frame-content7').classList.remove('active');
+                document.getElementById('frame-content6').classList.add('active');
+                document.getElementById('bottom-nav').classList.add('active');
+
+            }
+            
+            else if(numberb===3){
+                Home.classList.remove('active');
+                Ticket.classList.remove('active');
+                Setting.classList.remove('active');
+                Bell.classList.add('active');
+
+
+                document.getElementById('frame-content1').classList.remove('active');
+                document.getElementById('frame-content2').classList.remove('active');
+                document.getElementById('frame-content3').classList.remove('active');
+                document.getElementById('frame-content4').classList.remove('active');
+                document.getElementById('frame-content5').classList.remove('active');
+                document.getElementById('frame-content6').classList.remove('active');
+                document.getElementById('frame-content7').classList.add('active');
+                document.getElementById('bottom-nav').classList.add('active');
+            }
+
+            else{
+                Home.classList.remove('active');
+                Ticket.classList.remove('active');
+                Bell.classList.remove('active');
+                Setting.classList.add('active');
+
+            }
+
+            
+        }
+
+        
+        
+        
+    </script>
+   
+</body>
+</html>
