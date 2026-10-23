@@ -1,0 +1,10 @@
+{
+    "nownumber": {
+        "id": 1,
+        "numreservition": 13
+    },
+    "waitnumber": {
+        "id": 2,
+        "numreservition": 14
+    }
+}

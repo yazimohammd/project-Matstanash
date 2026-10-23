@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="h-full">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ماتستناش - Matstanash | نظام الحجز والانتظار الذكي</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        /* Base & Resets */
+        *, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: currentColor; }
+        html { line-height: 1.5; -webkit-text-size-adjust: 100%; font-family: 'Tajawal', sans-serif; }
+        body { margin: 0; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
+        input, button, select { font-family: inherit; font-size: 100%; line-height: inherit; color: inherit; margin: 0; padding: 0; background: transparent; }
+        button { cursor: pointer; }
+
+        :root {
+            --primary-bg: #1e00a3;
+            --accent-teal: #00bfa5;
+        }
+
+        /* Flex & Grid Layouts */
+        .flex { display: flex; }
+        .inline-flex { display: inline-flex; }
+        .grid { display: grid; }
+        .hidden { display: none !important; }
+        .block { display: block; }
+        .flex-col { flex-direction: column; }
+        .flex-grow { flex-grow: 1; }
+        .flex-1 { flex: 1 1 0%; }
+        .shrink-0 { flex-shrink: 0; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .gap-1 { gap: 0.25rem; }
+        .gap-1\.5 { gap: 0.375rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+
+        /* Sizing */
+        .w-full { width: 100%; }
+        .w-2 { width: 0.5rem; }
+        .w-3 { width: 0.75rem; }
+        .w-5 { width: 1.25rem; }
+        .w-8 { width: 2rem; }
+        .w-9 { width: 2.25rem; }
+        .w-10 { width: 2.5rem; }
+        .w-12 { width: 3rem; }
+        .w-14 { width: 3.5rem; }
+        .w-16 { width: 4rem; }
+        .w-24 { width: 6rem; }
+        .max-w-xs { max-width: 20rem; }
+        .max-w-md { max-width: 28rem; }
+        .h-full { height: 100%; }
+        .h-2 { height: 0.5rem; }
+        .h-2\.5 { height: 0.625rem; }
+        .h-3 { height: 0.75rem; }
+        .h-5 { height: 1.25rem; }
+        .h-8 { height: 2rem; }
+        .h-9 { height: 2.25rem; }
+        .h-10 { height: 2.5rem; }
+        .h-12 { height: 3rem; }
+        .h-14 { height: 3.5rem; }
+        .h-16 { height: 4rem; }
+        .h-24 { height: 6rem; }
+        .h-64 { height: 16rem; }
+        .min-h-screen { min-height: 100vh; }
+        .min-h-full { min-height: 100%; }
+
+        /* Padding & Margins */
+        .p-0 { padding: 0; }
+        .p-2 { padding: 0.5rem; }
+        .p-2\.5 { padding: 0.625rem; }
+        .p-3 { padding: 0.75rem; }
+        .p-3\.5 { padding: 0.875rem; }
+        .p-4 { padding: 1rem; }
+        .p-5 { padding: 1.25rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-3\.5 { padding-left: 0.875rem; padding-right: 0.875rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .pr-3\.5 { padding-right: 0.875rem; }
+        .pr-10 { padding-right: 2.5rem; }
+        .pl-3\.5 { padding-left: 0.875rem; }
+        .pl-4 { padding-left: 1rem; }
+        .pl-10 { padding-left: 2.5rem; }
+        .pt-2 { padding-top: 0.5rem; }
+        .pt-4 { padding-top: 1rem; }
+
+        .m-0 { margin: 0; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .my-1 { margin-top: 0.25rem; margin-bottom: 0.25rem; }
+        .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+        .my-3 { margin-top: 0.75rem; margin-bottom: 0.75rem; }
+        .my-4 { margin-top: 1rem; margin-bottom: 1rem; }
+        .my-auto { margin-top: auto; margin-bottom: auto; }
+        .mt-0\.5 { margin-top: 0.125rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-3 { margin-top: 0.75rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mt-8 { margin-top: 2rem; }
+        .mt-auto { margin-top: auto; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .-mt-1 { margin-top: -0.25rem; }
+
+        .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
+        .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem; }
+        .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem; }
+
+        /* Typography */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-\[10px\] { font-size: 10px; }
+        .text-\[11px\] { font-size: 11px; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-base { font-size: 1rem; line-height: 1.5rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+        .text-5xl { font-size: 3rem; line-height: 1; }
+        .text-6xl { font-size: 3.75rem; line-height: 1; }
+        .text-8xl { font-size: 6rem; line-height: 1; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        .font-extrabold { font-weight: 800; }
+        .font-black { font-weight: 900; }
+        .tracking-tight { letter-spacing: -0.025em; }
+        .tracking-wide { letter-spacing: 0.025em; }
+        .tracking-widest { letter-spacing: 0.1em; }
+        .uppercase { text-transform: uppercase; }
+        .whitespace-nowrap { white-space: nowrap; }
+
+        /* Background Colors */
+        .bg-white { background-color: #ffffff; }
+        .bg-slate-50 { background-color: #f8fafc; }
+        .bg-slate-100 { background-color: #f1f5f9; }
+        .bg-slate-200 { background-color: #e2e8f0; }
+        .bg-slate-900\/60 { background-color: rgba(15, 23, 42, 0.6); }
+        .bg-brand-50 { background-color: #eef2ff; }
+        .bg-brand-500 { background-color: #1e00a3; }
+        .bg-tealAccent-500 { background-color: #00bfa5; }
+        .bg-amber-50 { background-color: #fffbeb; }
+        .bg-amber-100 { background-color: #fef3c7; }
+        .bg-amber-400 { background-color: #fbbf24; }
+        .bg-teal-50 { background-color: #f0fdfa; }
+        .bg-teal-100 { background-color: #ccfbf1; }
+        .bg-indigo-50 { background-color: #eef2ff; }
+        .bg-emerald-50 { background-color: #ecfdf5; }
+        .bg-emerald-100 { background-color: #d1fae5; }
+        .bg-emerald-500 { background-color: #10b981; }
+        .bg-rose-50 { background-color: #fff1f2; }
+        .bg-blue-50 { background-color: #eff6ff; }
+        .bg-red-50 { background-color: #fef2f2; }
+        .bg-white\/10 { background-color: rgba(255, 255, 255, 0.1); }
+        .bg-white\/20 { background-color: rgba(255, 255, 255, 0.2); }
+        .bg-amber-900\/10 { background-color: rgba(120, 53, 15, 0.1); }
+
+        /* Text Colors */
+        .text-white { color: #ffffff; }
+        .text-slate-400 { color: #94a3b8; }
+        .text-slate-500 { color: #64748b; }
+        .text-slate-600 { color: #475569; }
+        .text-slate-700 { color: #334155; }
+        .text-slate-800 { color: #1e293b; }
+        .text-slate-900 { color: #0f172a; }
+        .text-brand-500 { color: #1e00a3; }
+        .text-brand-700 { color: #120063; }
+        .text-tealAccent-500 { color: #00bfa5; }
+        .text-teal-100 { color: #ccfbf1; }
+        .text-teal-600 { color: #0d9488; }
+        .text-amber-400 { color: #fbbf24; }
+        .text-amber-500 { color: #f59e0b; }
+        .text-amber-600 { color: #d97706; }
+        .text-amber-800 { color: #92400e; }
+        .text-amber-900 { color: #78350f; }
+        .text-indigo-200 { color: #c7d2fe; }
+        .text-indigo-600 { color: #4f46e5; }
+        .text-emerald-500 { color: #10b981; }
+        .text-emerald-600 { color: #059669; }
+        .text-rose-600 { color: #e11d48; }
+        .text-blue-600 { color: #2563eb; }
+        .text-red-500 { color: #ef4444; }
+        .text-red-600 { color: #dc2626; }
+        .text-purple-500 { color: #a855f7; }
+
+        /* Borders & Radius */
+        .border { border-width: 1px; }
+        .border-2 { border-width: 2px; }
+        .border-4 { border-width: 4px; }
+        .border-t { border-top-width: 1px; }
+        .border-slate-100 { border-color: #f1f5f9; }
+        .border-slate-200 { border-color: #e2e8f0; }
+        .border-slate-700 { border-color: #334155; }
+        .border-slate-800 { border-color: #1e293b; }
+        .border-brand-100 { border-color: #e0e7ff; }
+        .border-brand-500 { border-color: #1e00a3; }
+        .border-teal-200 { border-color: #99f6e4; }
+        .border-teal-400\/30 { border-color: rgba(45, 212, 191, 0.3); }
+        .border-amber-200 { border-color: #fde68a; }
+        .border-amber-300 { border-color: #fcd34d; }
+
+        .rounded { border-radius: 0.25rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-3xl { border-radius: 1.5rem; }
+        .rounded-full { border-radius: 9999px; }
+
+        /* Shadows & Transforms */
+        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1); }
+        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); }
+        .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .shadow-inner { box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); }
+        .overflow-hidden { overflow: hidden; }
+        .overflow-y-auto { overflow-y: auto; }
+        .overflow-x-hidden { overflow-x: hidden; }
+
+        .opacity-0 { opacity: 0; }
+        .opacity-10 { opacity: 0.1; }
+        .opacity-40 { opacity: 0.4; }
+        .opacity-100 { opacity: 1; }
+        .backdrop-blur-sm { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+
+        /* Positioning */
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .fixed { position: fixed; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .inset-y-0 { top: 0; bottom: 0; }
+        .top-1 { top: 0.25rem; }
+        .top-2 { top: 0.5rem; }
+        .right-0 { right: 0; }
+        .right-1 { right: 0.25rem; }
+        .right-2 { right: 0.5rem; }
+        .left-0 { left: 0; }
+        .left-3 { left: 0.75rem; }
+        .bottom-3 { bottom: 0.75rem; }
+        .z-10 { z-index: 10; }
+        .z-30 { z-index: 30; }
+        .z-\[400\] { z-index: 400; }
+        .z-\[999\] { z-index: 999; }
+
+        .outline-none { outline: 2px solid transparent; outline-offset: 2px; }
+        .accent-tealAccent-500 { accent-color: #00bfa5; }
+
+        /* Transitions & Hovers */
+        .transition { transition: all 0.2s ease-in-out; }
+        .transition-opacity { transition: opacity 0.2s ease-in-out; }
+        .transition-all { transition: all 0.5s ease-in-out; }
+
+        .hover\:bg-amber-300:hover { background-color: #fcd34d; }
+        .hover\:bg-amber-500:hover { background-color: #f59e0b; }
+        .hover\:bg-brand-50:hover { background-color: #eef2ff; }
+        .hover\:bg-brand-600:hover { background-color: #180082; }
+        .hover\:bg-tealAccent-600:hover { background-color: #009688; }
+        .hover\:bg-white\/20:hover { background-color: rgba(255, 255, 255, 0.2); }
+        .hover\:bg-slate-50:hover { background-color: #f8fafc; }
+        .hover\:bg-slate-100:hover { background-color: #f1f5f9; }
+        .hover\:bg-red-100:hover { background-color: #fee2e2; }
+        .hover\:text-white:hover { color: #ffffff; }
+        .hover\:text-brand-500:hover { color: #1e00a3; }
+        .hover\:underline:hover { text-decoration: underline; }
+        .hover\:shadow-md:hover { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+        
+        .group:hover .group-hover\:scale-110 { transform: scale(1.1); }
+        .active\:scale-95:active { transform: scale(0.95); }
+
+        .focus\:ring-2:focus { box-shadow: 0 0 0 2px #1e00a3; }
+        .focus\:ring-brand-500:focus { box-shadow: 0 0 0 2px #1e00a3; }
+        .focus\:ring-tealAccent-500:focus { box-shadow: 0 0 0 2px #00bfa5; }
+
+        /* Animations */
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 50% { opacity: .5; } }
+        .animate-ping { animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+
+        /* Responsive Breakpoint (sm) */
+        @media (min-width: 640px) {
+            .sm\:p-4 { padding: 1rem; }
+            .sm\:min-h-\[844px\] { min-height: 844px; }
+            .sm\:max-h-\[900px\] { max-height: 900px; }
+            .sm\:rounded-\[36px\] { border-radius: 36px; }
+            .sm\:shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+            .sm\:border-4 { border-width: 4px; }
+            .sm\:border-slate-800 { border-color: #1e293b; }
+        }
+
+        /* Dark Mode Classes */
+        .dark .dark\:bg-slate-900 { background-color: #0f172a; }
+        .dark .dark\:bg-slate-800 { background-color: #1e293b; }
+        .dark .dark\:bg-slate-700 { background-color: #334155; }
+        .dark .dark\:bg-slate-600 { background-color: #475569; }
+        .dark .dark\:bg-slate-700\/40 { background-color: rgba(51, 65, 85, 0.4); }
+        .dark .dark\:bg-slate-700\/50 { background-color: rgba(51, 65, 85, 0.5); }
+        .dark .dark\:bg-slate-700\/60 { background-color: rgba(51, 65, 85, 0.6); }
+        .dark .dark\:bg-indigo-900\/40 { background-color: rgba(49, 46, 129, 0.4); }
+        .dark .dark\:bg-amber-900\/40 { background-color: rgba(120, 53, 15, 0.4); }
+        .dark .dark\:bg-emerald-900\/40 { background-color: rgba(6, 78, 59, 0.4); }
+        .dark .dark\:bg-teal-900\/40 { background-color: rgba(19, 78, 74, 0.4); }
+        .dark .dark\:bg-rose-900\/40 { background-color: rgba(136, 19, 55, 0.4); }
+        .dark .dark\:bg-blue-900\/40 { background-color: rgba(30, 58, 138, 0.4); }
+        .dark .dark\:bg-red-900\/20 { background-color: rgba(127, 29, 29, 0.2); }
+
+        .dark .dark\:text-white { color: #ffffff; }
+        .dark .dark\:text-slate-100 { color: #f1f5f9; }
+        .dark .dark\:text-slate-200 { color: #e2e8f0; }
+        .dark .dark\:text-slate-300 { color: #cbd5e1; }
+        .dark .dark\:text-slate-400 { color: #94a3b8; }
+        .dark .dark\:text-tealAccent-300 { color: #5eead4; }
+        .dark .dark\:text-tealAccent-400 { color: #2dd4bf; }
+        .dark .dark\:text-emerald-400 { color: #34d399; }
+        .dark .dark\:text-indigo-400 { color: #818cf8; }
+        .dark .dark\:text-amber-300 { color: #fde047; }
+        .dark .dark\:text-amber-400 { color: #fbbf24; }
+        .dark .dark\:text-rose-400 { color: #f87171; }
+        .dark .dark\:text-blue-400 { color: #60a5fa; }
+        .dark .dark\:text-red-400 { color: #f87171; }
+
+        .dark .dark\:border-slate-500 { border-color: #64748b; }
+        .dark .dark\:border-slate-600 { border-color: #475569; }
+        .dark .dark\:border-slate-700 { border-color: #334155; }
+        .dark .dark\:border-tealAccent-400 { border-color: #2dd4bf; }
+        .dark .dark\:border-teal-500\/30 { border-color: rgba(20, 184, 166, 0.3); }
+        .dark .dark\:border-amber-500\/20 { border-color: rgba(245, 158, 11, 0.2); }
+        .dark .dark\:hover\:text-tealAccent-400:hover { color: #2dd4bf; }
+        .dark .dark\:hover\:bg-slate-700:hover { background-color: #334155; }
+
+        /* Frame transitions */
+        .frame-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.25s ease-in-out;
+        }
+
+        .frame-content.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-teal);
+            border-radius: 4px;
+        }
+
+        /* Map custom styles */
+        .leaflet-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 1.25rem;
+            z-index: 10;
+        }
+
+        .pulse-ring {
+            box-shadow: 0 0 0 0 rgba(0, 191, 165, 0.7);
+            animation: pulse-animation 1.6s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 191, 165, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 12px rgba(0, 191, 165, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 191, 165, 0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col items-center justify-center p-0 sm:p-4">
+
+    <main class="w-full max-w-md bg-white dark:bg-slate-800 min-h-screen sm:min-h-[844px] sm:max-h-[900px] sm:rounded-[36px] sm:shadow-2xl sm:border-4 sm:border-slate-800 overflow-hidden flex flex-col relative">
+
+        <!-- Header Bar -->
+        <header id="main-header" class="bg-brand-500 text-white px-5 py-4 flex items-center justify-between shadow-md z-30 shrink-0">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleUserMenu()" class="w-9 h-9 rounded-full bg-amber-400 text-brand-700 flex items-center justify-center font-bold text-lg shadow hover:bg-amber-300 transition">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="text-right">
+                    <div class="font-extrabold text-base tracking-wide flex items-center gap-1.5">
+                        <i class="fas fa-hourglass-half text-amber-400"></i>
+                        <span>ماتستناش</span>
+                    </div>
+                    <span id="header-subtitle" class="text-[10px] text-indigo-200 block -mt-1 font-medium">Matstanash App</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="fnavigation1bar(3)" class="relative p-2 text-indigo-200 hover:text-white transition">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-amber-400 rounded-full"></span>
+                </button>
+                <button onclick="openFrame(3)" class="text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full flex items-center gap-1 text-teal-300 border border-teal-400/30 transition">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="headerCityName">ورقلة</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Frames Container -->
+        <div class="flex-grow flex flex-col relative overflow-y-auto overflow-x-hidden">
+
+            <section id="frame-content1" class="frame-content active flex-col items-center justify-between p-6 flex-grow min-h-full">
+                <!-- Splash Screen Sub-state -->
+                <div id="splash-subscreen" class="flex flex-col items-center justify-center flex-grow text-center my-auto">
+                    <div class="w-24 h-24 bg-brand-500 rounded-3xl flex items-center justify-center shadow-xl mb-6 pulse-ring">
+                        <i class="fas fa-hourglass-end text-amber-400 text-5xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-black text-brand-500 dark:text-tealAccent-400 mb-2 tracking-tight">ماتستناش</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 max-w-xs font-semibold">تطبيقك الأول لتنظيم وحجز دورك الذكي بدون تضييع للوقت</p>
+                    <div class="mt-8 flex items-center gap-2 text-brand-500">
+                        <i class="fas fa-spinner fa-spin text-xl"></i>
+                        <span class="text-xs font-bold">جاري تحميل التطبيق...</span>
+                    </div>
+                </div>
+
+                <!-- Language Selection Sub-state -->
+                <div id="language-subscreen" class="hidden flex-col items-center justify-center flex-grow w-full my-auto">
+                    <div class="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 w-full text-center shadow-lg">
+                        <i class="fas fa-globe text-brand-500 dark:text-tealAccent-400 text-4xl mb-3"></i>
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-1">اختر لغة التطبيق</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-300 mb-6">Select Language / Choisissez la langue</p>
+
+                        <div class="space-y-3">
+                            <button onclick="language1begin('ar')" class="w-full py-3.5 px-4 bg-white dark:bg-slate-800 border-2 border-brand-500 text-brand-500 dark:text-tealAccent-400 dark:border-tealAccent-400 rounded-2xl font-bold text-sm flex items-center justify-between hover:bg-brand-50 transition shadow-sm">
+                                <span>العربية</span>
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                            <button onclick="language1begin('en')" class="w-full py-3.5 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 rounded-2xl font-bold text-sm flex items-center justify-between hover:bg-slate-100 transition shadow-sm">
+                                <span>English</span>
+                                <i class="fas fa-arrow-left opacity-40"></i>
+                            </button>
+                            <button onclick="language1begin('fr')" class="w-full py-3.5 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 rounded-2xl font-bold text-sm flex items-center justify-between hover:bg-slate-100 transition shadow-sm">
+                                <span>Français</span>
+                                <i class="fas fa-arrow-left opacity-40"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center pt-4 text-[10px] text-slate-400 dark:text-slate-500 font-bold tracking-widest uppercase">
+                    Precision • Urgency • Reliability
+                </div>
+            </section>
+
+            <section id="frame-content2" class="frame-content flex-col p-5 flex-grow">
+                <div class="text-center my-4">
+                    <div class="inline-flex p-3 bg-brand-50 dark:bg-slate-700 text-brand-500 dark:text-tealAccent-400 rounded-2xl mb-2">
+                        <i class="fas fa-user-lock text-3xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-800 dark:text-white">تسجيل الدخول</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">مرحباً بك مجدداً! قم بالولوج لإدارة تذاكرك</p>
+                </div>
+
+                <!-- Login Card -->
+                <div id="idlogin-card1" class="space-y-4 my-auto">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم المستخدم / البريد الإلكتروني</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <input type="text" id="username" class="w-full pr-10 pl-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition" placeholder="مثال: mohamed123">
+                        </div>
+                        <div id="msg-username" class="text-red-500 text-[11px] mt-1 font-semibold"></div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">كلمة المرور</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" id="password" class="w-full pr-10 pl-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition" placeholder="••••••••">
+                        </div>
+                        <div id="msg-password" class="text-red-500 text-[11px] mt-1 font-semibold"></div>
+                    </div>
+
+                    <div class="flex justify-between items-center text-xs">
+                        <label class="flex items-center gap-2 cursor-pointer text-slate-600 dark:text-slate-300">
+                            <input type="checkbox" checked class="rounded text-brand-500 focus:ring-brand-500">
+                            <span>تذكرني</span>
+                        </label>
+                        <a href="#" onclick="showCustomModal('استرجاع كلمة المرور', 'تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني.')" class="text-brand-500 dark:text-tealAccent-400 font-bold hover:underline">نسيت كلمة المرور؟</a>
+                    </div>
+
+                    <button onclick="login1form()" class="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                        <span>تسجيل الدخول</span>
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+
+                    <div class="relative my-4 text-center">
+                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-slate-700"></div></div>
+                        <span class="relative bg-white dark:bg-slate-800 px-3 text-xs text-slate-400 font-semibold">أو عن طريق</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="login1form()" class="py-2.5 px-4 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                            <i class="fab fa-google text-red-500 text-sm"></i> Google
+                        </button>
+                        <button onclick="login1form()" class="py-2.5 px-4 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                            <i class="fab fa-facebook text-blue-600 text-sm"></i> Facebook
+                        </button>
+                    </div>
+
+                    <p class="text-center text-xs text-slate-500 mt-4">
+                        ليس لديك حساب؟
+                        <button onclick="moveToLoginScreen('idlogin-card2')" class="text-brand-500 dark:text-tealAccent-400 font-bold hover:underline">إنشاء حساب جديد</button>
+                    </p>
+                </div>
+
+                <!-- Register Card -->
+                <div id="idlogin-card2" class="hidden space-y-3 my-auto">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم المستخدم</label>
+                        <input type="text" id="new-username" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm outline-none">
+                        <div id="msg-new-username" class="text-red-500 text-[11px]"></div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">البريد الإلكتروني</label>
+                        <input type="email" id="new-email" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm outline-none">
+                        <div id="msg-new-email" class="text-red-500 text-[11px]"></div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">كلمة المرور</label>
+                        <input type="password" id="new-password" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm outline-none">
+                        <div id="msg-new-password" class="text-red-500 text-[11px]"></div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">تأكيد كلمة المرور</label>
+                        <input type="password" id="confirm-password" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm outline-none">
+                        <div id="msg-confirm-password" class="text-red-500 text-[11px]"></div>
+                    </div>
+
+                    <button onclick="register1form()" class="w-full py-3 bg-tealAccent-500 hover:bg-tealAccent-600 text-white font-bold rounded-xl shadow transition">
+                        إنشاء الحساب
+                    </button>
+                    <button onclick="moveToLoginScreen('idlogin-card1')" class="w-full py-2 text-xs text-slate-500 font-bold hover:underline text-center block">
+                        العودة إلى تسجيل الدخول
+                    </button>
+                </div>
+            </section>
+
+            <section id="frame-content3" class="frame-content flex-col p-4 flex-grow space-y-3">
+                <div class="text-center">
+                    <h2 class="text-xl font-black text-slate-800 dark:text-white">تحديد ولاية الخدمة</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">اختر الولاية لتصفح المؤسسات والخدمات القريبة منك</p>
+                </div>
+
+                <!-- Location Search Bar -->
+                <div class="relative">
+                    <input id="locationInput" type="text" placeholder="ابحث عن ولايتك (مثال: الجزائر، ورقلة، وهران)..." onkeypress="handleSearch(event)" class="w-full pr-10 pl-10 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-full text-xs font-semibold focus:ring-2 focus:ring-tealAccent-500 outline-none">
+                    <button onclick="triggerSearch()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-tealAccent-500">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button onclick="resetToDefaultLocation()" class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 hover:text-brand-500">
+                        <i class="fas fa-crosshairs"></i>
+                    </button>
+                </div>
+
+                <!-- Leaflet Interactive Map Box -->
+                <div class="relative w-full h-64 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-inner">
+                    <div id="map"></div>
+                    <div class="absolute bottom-3 left-3 z-[400] flex flex-col gap-1">
+                        <button onclick="if(map) map.zoomIn()" class="w-8 h-8 bg-white dark:bg-slate-800 dark:text-white font-bold rounded-lg shadow text-base flex items-center justify-center hover:bg-slate-100">+</button>
+                        <button onclick="if(map) map.zoomOut()" class="w-8 h-8 bg-white dark:bg-slate-800 dark:text-white font-bold rounded-lg shadow text-base flex items-center justify-center hover:bg-slate-100">-</button>
+                    </div>
+                </div>
+
+                <div class="bg-teal-50 dark:bg-slate-700/60 border border-teal-200 dark:border-teal-500/30 p-3 rounded-2xl flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-tealAccent-500 text-white flex items-center justify-center text-lg shrink-0">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="text-xs">
+                        <p class="font-bold text-slate-800 dark:text-white">الموقع المختار: ولاية <span id="currentStateText" class="text-tealAccent-600 dark:text-tealAccent-400 font-extrabold">ورقلة</span></p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-300">انقر على الخريطة أو استخدم البحث للتغيير.</p>
+                    </div>
+                </div>
+
+                <button onclick="confirmLocation()" class="w-full py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold rounded-2xl shadow transition flex items-center justify-center gap-2 mt-auto">
+                    <span>تأكيد المتابعة</span>
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </section>
+
+            <section id="frame-content4" class="frame-content flex-col p-4 flex-grow space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-black text-slate-800 dark:text-white">اختر المؤسسة</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">حدد القطاع للوصول إلى حجز التكفل بالدور</p>
+                    </div>
+                    <span class="px-2.5 py-1 bg-brand-50 dark:bg-slate-700 text-brand-500 dark:text-tealAccent-400 text-xs font-bold rounded-full border border-brand-100 dark:border-slate-600">8 قطاعات</span>
+                </div>
+
+                <!-- Services Grid -->
+                <div class="grid grid-cols-2 gap-3" id="servicesGrid">
+                    <button onclick="fticektselection(1, 'اتصالات الجزائر')" class="p-4 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col items-center text-center gap-2 group">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100">اتصالات الجزائر</span>
+                    </button>
+
+                    <button onclick="fticektselection(2, 'بريد الجزائر')" class="p-4 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col items-center text-center gap-2 group">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-900/40 text-amber-500 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+                            <i class="fas fa-envelope-open-text"></i>
+                        </div>
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100">بريد الجزائر</span>
+                    </button>
+
+                    <button onclick="fticektselection(3, 'شركات التأمين')" class="p-4 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col items-center text-center gap-2 group">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100">شركات التأمين</span>
+                    </button>
+
+                    <button onclick="fticektselection(4, 'المحاكم والإدارات')" class="p-4 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col items-center text-center gap-2 group">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-900/10 text-amber-800 dark:text-amber-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100">المحكمة الإدارية</span>
+                    </button>
+
+                    <button onclick="fticektselection(5, 'العيادات الخاصة')" class="p-4 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col items-center text-center gap-2 group">
+                        <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100">العيادات الخاصة</span>
+                    </button>
+
+                    <button onclick="fticektselection(6, 'المستشفيات العمومية')" class="p-4 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col items-center text-center gap-2 group">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+                            <i class="fas fa-hospital-user"></i>
+                        </div>
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100">المستشفيات</span>
+                    </button>
+
+                    <button onclick="fticektselection(7, 'القطاع البنكي')" class="p-4 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col items-center text-center gap-2 group">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100">البنوك والمصارف</span>
+                    </button>
+
+                    <button onclick="fticektselection(8, 'متعامل الهاتف')" class="p-4 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col items-center text-center gap-2 group">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+                            <i class="fas fa-sim-card"></i>
+                        </div>
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100">وكالات المتعاملين</span>
+                    </button>
+                </div>
+
+                <div class="mt-auto bg-amber-50 dark:bg-slate-700/40 border border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-300 p-3 rounded-2xl text-xs flex items-center gap-2">
+                    <i class="fas fa-clock text-base"></i>
+                    <span>تخفيض متوسط وقت الانتظار بنسبة 85% عبر الذكاء الاصطناعي.</span>
+                </div>
+            </section>
+
+            <section id="frame-content5" class="frame-content flex-col p-5 flex-grow space-y-4">
+                <div class="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs text-center p-3 rounded-xl border border-slate-200 dark:border-slate-600 flex items-center justify-center gap-2">
+                    <i class="fas fa-building text-brand-500 dark:text-tealAccent-400"></i>
+                    <span id="selectedFoundationName">بريد الجزائر - وسط المدينة</span>
+                </div>
+
+                <div class="bg-white dark:bg-slate-700 p-6 rounded-3xl border border-slate-100 dark:border-slate-600 shadow-md text-center">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 font-extrabold text-xs rounded-full mb-3">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
+                        <span>مباشر LIVE</span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-300 mb-1">الرقم الحالي عند الشباك</p>
+                    <p id="liveQueueNumber" class="text-6xl font-black text-brand-500 dark:text-tealAccent-400 tracking-tight my-1">115</p>
+                    <p class="text-[11px] text-slate-400">يتغير الرقم فور تقدم الدور</p>
+                </div>
+
+                <div onclick="generateTicket()" class="bg-tealAccent-500 hover:bg-tealAccent-600 text-white p-8 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center cursor-pointer transition transform active:scale-95 flex-grow">
+                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl mb-3">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h3 class="text-xl font-black">احصل على تذكرتك الآن</h3>
+                    <p class="text-xs text-teal-100 mt-1 font-semibold">انقر لمسح QR الكود أو التوليد المباشر</p>
+                </div>
+
+                <div class="text-center">
+                    <button onclick="generateTicket()" class="text-xs text-brand-500 dark:text-tealAccent-400 font-bold hover:underline flex items-center justify-center gap-1 mx-auto">
+                        <i class="fas fa-keyboard"></i>
+                        <span>أدخل رقم التذكرة الورقية يدوياً</span>
+                    </button>
+                </div>
+            </section>
+
+            <section id="frame-content6" class="frame-content flex-col p-4 flex-grow space-y-3">
+                <div class="bg-tealAccent-500 text-white p-5 rounded-3xl shadow-lg text-center relative overflow-hidden">
+                    <div class="absolute top-2 right-2 opacity-10 text-8xl"><i class="fas fa-ticket-alt"></i></div>
+                    <p class="text-xs font-bold text-teal-100">رقم تذكرتك الإلكترونية</p>
+                    <p id="userTicketNumber" class="text-6xl font-black my-1 tracking-tight">#145</p>
+                    <div class="inline-flex items-center gap-1.5 bg-white/20 px-3 py-1 rounded-full text-[11px] font-bold">
+                        <i class="fas fa-check-circle"></i>
+                        <span>مؤكد ومحجوز بنجاح</span>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-700 p-4 rounded-2xl border border-slate-100 dark:border-slate-600 shadow-sm flex items-center justify-between">
+                    <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <div class="text-center">
+                        <p class="text-xs text-slate-500 dark:text-slate-300">الرقم الحالي الذي يتم خدمته الان:</p>
+                        <p id="currentServingNumber" class="text-3xl font-black text-brand-500 dark:text-tealAccent-400">#120</p>
+                    </div>
+                    <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+                </div>
+
+                <!-- AI Estimated Time -->
+                <div class="bg-white dark:bg-slate-700 p-4 rounded-2xl border border-slate-100 dark:border-slate-600 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-robot text-tealAccent-500 text-lg"></i>
+                            <span class="font-bold text-slate-700 dark:text-slate-200">الانتظار التقديري (AI)</span>
+                        </div>
+                        <span class="font-black text-slate-800 dark:text-white text-base">25 <span class="text-xs font-normal">دقيقة</span></span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-600 h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-tealAccent-500 h-full rounded-full transition-all duration-500" style="width: 45%"></div>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-300 text-center font-bold">الأشخاص أمامك حالياً: 25 مواطن</p>
+                </div>
+
+                <button onclick="cancelTicket()" class="w-full py-3 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold rounded-2xl text-xs transition flex items-center justify-center gap-2">
+                    <i class="fas fa-times-circle"></i>
+                    <span>إلغاء التذكرة</span>
+                </button>
+
+                <div class="bg-brand-50 dark:bg-slate-700/50 text-brand-700 dark:text-tealAccent-300 p-3 rounded-2xl text-[11px] flex items-start gap-2 mt-auto">
+                    <i class="fas fa-info-circle text-base mt-0.5 shrink-0"></i>
+                    <span>يرجى الحضور لقاعة الانتظار عند وصول الرقم إلى 142 ليصلك التنبيه في الوقت المناسب.</span>
+                </div>
+            </section>
+
+            <section id="frame-content7" class="frame-content flex-col p-4 flex-grow space-y-4">
+                <div class="bg-amber-100 border border-amber-300 text-amber-900 font-extrabold text-xs p-3 rounded-2xl flex items-center justify-center gap-2">
+                    <i class="fas fa-exclamation-triangle text-amber-600 text-base"></i>
+                    <span>تنبيه هام - اقتراب الدور!</span>
+                </div>
+
+                <div class="bg-white dark:bg-slate-700 p-5 rounded-3xl border border-slate-100 dark:border-slate-600 shadow-md text-center space-y-4 my-auto">
+                    <h2 class="text-xl font-black text-slate-800 dark:text-white">حان وقت توجهك للمؤسسة!</h2>
+
+                    <div class="bg-amber-50 dark:bg-slate-800 p-4 rounded-2xl border border-amber-200 dark:border-amber-500/20">
+                        <p class="text-xs text-slate-500 dark:text-slate-300">الرقم الحالي عند الشباك الآن</p>
+                        <p class="text-5xl font-black text-brand-500 dark:text-tealAccent-400 my-1">#141</p>
+                        <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400">متبقي 4 أشخاص فقط أمامك</p>
+                    </div>
+
+                    <!-- Walk delay slider simulation -->
+                    <div class="space-y-2 text-right">
+                        <div class="flex justify-between text-xs text-slate-600 dark:text-slate-300 font-bold">
+                            <span>الوقت للوصول للمكتب:</span>
+                            <span id="walkTimeValue">5 دقائق</span>
+                        </div>
+                        <input type="range" min="1" max="20" value="5" oninput="document.getElementById('walkTimeValue').innerText = this.value + ' دقائق'" class="w-full accent-tealAccent-500 cursor-pointer">
+                    </div>
+
+                    <div class="space-y-2">
+                        <button onclick="showCustomModal('تم التأكيد', 'نتمنى لك تجربة خدمة ممتازة!'); fnavigation1bar(2);" class="w-full py-3 bg-tealAccent-500 hover:bg-tealAccent-600 text-white font-bold rounded-2xl text-xs transition flex items-center justify-center gap-2">
+                            <i class="fas fa-walking text-base"></i>
+                            <span>أنا في طريقي الآن</span>
+                        </button>
+                        <button onclick="showCustomModal('تمديد الدور', 'تم إضافة 5 دقائق حماية إضافية لدورك.')" class="w-full py-3 bg-slate-100 dark:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-2xl text-xs transition">
+                            طلب تمديد 5 دقائق إضافية
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="frame-content8" class="frame-content flex-col p-4 flex-grow space-y-4">
+                <div class="text-center">
+                    <h2 class="text-xl font-black text-slate-800 dark:text-white">إعدادات التطبيق</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">تخصص تجربة الاستخدام والمظهر</p>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Language Option -->
+                    <div class="bg-white dark:bg-slate-700 p-4 rounded-2xl border border-slate-100 dark:border-slate-600 shadow-sm">
+                        <div class="flex items-center gap-2 mb-3 text-slate-800 dark:text-white font-bold text-xs">
+                            <i class="fas fa-globe text-brand-500 dark:text-tealAccent-400 text-base"></i>
+                            <span>لغة الواجهة</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="AppSettings.set('language', 'ar'); updatePageLanguage('ar');" class="py-2 border rounded-xl text-xs font-bold dark:border-slate-500 dark:text-white hover:border-brand-500">العربية</button>
+                            <button onclick="AppSettings.set('language', 'en'); updatePageLanguage('en');" class="py-2 border rounded-xl text-xs font-bold dark:border-slate-500 dark:text-white hover:border-brand-500">English</button>
+                            <button onclick="AppSettings.set('language', 'fr'); updatePageLanguage('fr');" class="py-2 border rounded-xl text-xs font-bold dark:border-slate-500 dark:text-white hover:border-brand-500">Français</button>
+                        </div>
+                    </div>
+
+                    <!-- Theme Option -->
+                    <div class="bg-white dark:bg-slate-700 p-4 rounded-2xl border border-slate-100 dark:border-slate-600 shadow-sm">
+                        <div class="flex items-center gap-2 mb-3 text-slate-800 dark:text-white font-bold text-xs">
+                            <i class="fas fa-palette text-purple-500 text-base"></i>
+                            <span>المظهر والنمط</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="AppSettings.set('theme', 'light')" class="py-2.5 border rounded-xl text-xs font-bold flex items-center justify-center gap-2 dark:border-slate-500 dark:text-white hover:bg-slate-50">
+                                <i class="fas fa-sun text-amber-500"></i> فاتح
+                            </button>
+                            <button onclick="AppSettings.set('theme', 'dark')" class="py-2.5 border rounded-xl text-xs font-bold flex items-center justify-center gap-2 dark:border-slate-500 dark:text-white hover:bg-slate-50">
+                                <i class="fas fa-moon text-indigo-400"></i> داكن
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Font Size -->
+                    <div class="bg-white dark:bg-slate-700 p-4 rounded-2xl border border-slate-100 dark:border-slate-600 shadow-sm">
+                        <div class="flex items-center gap-2 mb-2 text-slate-800 dark:text-white font-bold text-xs">
+                            <i class="fas fa-text-height text-emerald-500 text-base"></i>
+                            <span>حجم النص</span>
+                        </div>
+                        <select onchange="AppSettings.set('fontSize', this.value)" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-xs font-bold outline-none dark:text-white">
+                            <option value="small">صغير</option>
+                            <option value="medium" selected>متوسط</option>
+                            <option value="large">كبير</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex gap-2">
+                    <button onclick="AppSettings.reset(); showCustomModal('تم الإعادة', 'تم استرجاع الإعدادات الافتراضية');" class="flex-1 py-3 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs">
+                        إعادة تعيين
+                    </button>
+                    <button onclick="showCustomModal('تم الحفظ', 'تم حفظ جميع الإعدادات')" class="flex-1 py-3 bg-tealAccent-500 text-white font-bold rounded-xl text-xs shadow">
+                        حفظ الإعدادات
+                    </button>
+                </div>
+            </section>
+
+        </div>
+
+        <nav id="bottom-nav" class="hidden bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 px-6 py-2 flex justify-between items-center z-30 shrink-0">
+            <button id="nav-home" onclick="fnavigation1bar(1)" class="flex flex-col items-center text-slate-400 hover:text-brand-500 dark:hover:text-tealAccent-400 text-xs font-bold transition gap-1">
+                <i class="fas fa-home text-lg"></i>
+                <span>الرئيسية</span>
+            </button>
+            <button id="nav-ticket" onclick="fnavigation1bar(2)" class="flex flex-col items-center text-slate-400 hover:text-brand-500 dark:hover:text-tealAccent-400 text-xs font-bold transition gap-1">
+                <i class="fas fa-ticket-alt text-lg"></i>
+                <span>تذكرتي</span>
+            </button>
+            <button id="nav-bell" onclick="fnavigation1bar(3)" class="flex flex-col items-center text-slate-400 hover:text-brand-500 dark:hover:text-tealAccent-400 text-xs font-bold transition gap-1">
+                <i class="fas fa-bell text-lg"></i>
+                <span>التنبيهات</span>
+            </button>
+            <button id="nav-setting" onclick="fnavigation1bar(4)" class="flex flex-col items-center text-slate-400 hover:text-brand-500 dark:hover:text-tealAccent-400 text-xs font-bold transition gap-1">
+                <i class="fas fa-cog text-lg"></i>
+                <span>الإعدادات</span>
+            </button>
+        </nav>
+
+        <div id="customModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4 hidden transition-opacity opacity-0">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl max-w-xs w-full text-center shadow-2xl space-y-4">
+                <div class="w-14 h-14 bg-teal-100 text-tealAccent-500 rounded-full flex items-center justify-center text-2xl mx-auto">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div>
+                    <h3 id="modalTitle" class="font-black text-slate-800 dark:text-white text-base">عنوان التنبيه</h3>
+                    <p id="modalBody" class="text-xs text-slate-500 dark:text-slate-300 mt-1 font-semibold">نص الرسالة والتفاصيل المتعلقة بالعملية.</p>
+                </div>
+                <button onclick="closeModal()" class="w-full py-3 bg-tealAccent-500 hover:bg-tealAccent-600 text-white font-bold rounded-2xl text-xs shadow">
+                    حسناً
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let map, currentMarker;
+        let currentLatLng = [31.9493, 5.3250]; // ورقلة
+        let currentCityName = "ورقلة";
+        let activeFoundation = "بريد الجزائر - وسط المدينة";
+        let userTicket = "#145";
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Splash Timer Simulation
+            setTimeout(() => {
+                document.getElementById('splash-subscreen').classList.add('hidden');
+                document.getElementById('language-subscreen').classList.remove('hidden');
+                document.getElementById('language-subscreen').classList.add('flex');
+            }, 1800);
+
+            AppSettings.applySettings();
+        });
+
+        function openFrame(frameNum) {
+            document.querySelectorAll('.frame-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            const target = document.getElementById('frame-content' + frameNum);
+            if (target) target.classList.add('active');
+
+            if (frameNum === 3 && !map) {
+                setTimeout(initMap, 200);
+            }
+        }
+
+        function fnavigation1bar(numberb) {
+            const navIds = ['nav-home', 'nav-ticket', 'nav-bell', 'nav-setting'];
+            navIds.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('text-brand-500', 'dark:text-tealAccent-400');
+            });
+
+            if (numberb === 1) {
+                openFrame(4);
+                document.getElementById('nav-home').classList.add('text-brand-500', 'dark:text-tealAccent-400');
+            } else if (numberb === 2) {
+                openFrame(6);
+                document.getElementById('nav-ticket').classList.add('text-brand-500', 'dark:text-tealAccent-400');
+            } else if (numberb === 3) {
+                openFrame(7);
+                document.getElementById('nav-bell').classList.add('text-brand-500', 'dark:text-tealAccent-400');
+            } else if (numberb === 4) {
+                openFrame(8);
+                document.getElementById('nav-setting').classList.add('text-brand-500', 'dark:text-tealAccent-400');
+            }
+        }
+
+        function language1begin(lang) {
+            updatePageLanguage(lang);
+            openFrame(2);
+            document.getElementById('bottom-nav').classList.remove('hidden');
+            document.getElementById('bottom-nav').classList.add('flex');
+        }
+
+        function login1form() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!username) {
+                document.getElementById('msg-username').innerText = 'يرجى كتابة اسم المستخدم';
+                return;
+            } else { document.getElementById('msg-username').innerText = ''; }
+
+            if (!password) {
+                document.getElementById('msg-password').innerText = 'يرجى كتابة كلمة المرور';
+                return;
+            } else { document.getElementById('msg-password').innerText = ''; }
+
+            fnavigation1bar(1);
+        }
+
+        function moveToLoginScreen(cardId) {
+            if (cardId === 'idlogin-card1') {
+                document.getElementById('idlogin-card2').classList.add('hidden');
+                document.getElementById('idlogin-card1').classList.remove('hidden');
+            } else {
+                document.getElementById('idlogin-card1').classList.add('hidden');
+                document.getElementById('idlogin-card2').classList.remove('hidden');
+            }
+        }
+
+        function register1form() {
+            showCustomModal('تسجيل حساب', 'تم إنشاء حسابك بنجاح! يمكن الآن بدء استخدامه.');
+            moveToLoginScreen('idlogin-card1');
+        }
+
+        function initMap() {
+            if (map) return;
+            const container = document.getElementById('map');
+            if (!container) return;
+
+            map = L.map('map', { zoomControl: false, attributionControl: false }).setView(currentLatLng, 12);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+
+            updateMarker(currentLatLng, currentCityName);
+
+            map.on('click', (e) => {
+                currentLatLng = [e.latlng.lat, e.latlng.lng];
+                currentCityName = "موقع مختار";
+                updateMarker(currentLatLng, currentCityName);
+                updateMapUI(currentCityName);
+            });
+        }
+
+        function updateMarker(latlng, label) {
+            if (currentMarker) map.removeLayer(currentMarker);
+
+            const iconHtml = `
+                <div class="flex flex-col items-center">
+                    <span class="bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow border border-tealAccent-400 whitespace-nowrap">${label}</span>
+                    <div class="w-5 h-5 bg-tealAccent-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center">
+                        <div class="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                </div>`;
+
+            const customIcon = L.divIcon({
+                className: '',
+                html: iconHtml,
+                iconSize: [80, 50],
+                iconAnchor: [40, 45]
+            });
+
+            currentMarker = L.marker(latlng, { icon: customIcon }).addTo(map);
+            map.setView(latlng, map.getZoom());
+        }
+
+        function updateMapUI(name) {
+            document.getElementById('currentStateText').innerText = name;
+            document.getElementById('headerCityName').innerText = name;
+        }
+
+        function triggerSearch() {
+            const val = document.getElementById('locationInput').value.trim();
+            if (val) {
+                currentCityName = val;
+                updateMarker(currentLatLng, currentCityName);
+                updateMapUI(currentCityName);
+            }
+        }
+
+        function handleSearch(e) {
+            if (e.key === 'Enter') triggerSearch();
+        }
+
+        function resetToDefaultLocation() {
+            currentLatLng = [31.9493, 5.3250];
+            currentCityName = "ورقلة";
+            if (map) updateMarker(currentLatLng, currentCityName);
+            updateMapUI(currentCityName);
+        }
+
+        function confirmLocation() {
+            showCustomModal('تم تحديد الولاية', `تم تثبيت ولاية ${currentCityName} للخدمات الحالية.`);
+            fnavigation1bar(1);
+        }
+
+        function fticektselection(id, name) {
+            activeFoundation = name + " - " + currentCityName;
+            document.getElementById('selectedFoundationName').innerText = activeFoundation;
+            openFrame(5);
+        }
+
+        function generateTicket() {
+            const randomNum = Math.floor(Math.random() * 50) + 130;
+            userTicket = "#" + randomNum;
+            document.getElementById('userTicketNumber').innerText = userTicket;
+            showCustomModal('حجز تذكرة إلكترونية', `تم استخراج تذكرتك ${userTicket} بنجاح!`);
+            fnavigation1bar(2);
+        }
+
+        function cancelTicket() {
+            showCustomModal('إلغاء التذكرة', 'تم إلغاء التذكرة وإتاحة المجال لمواطن آخر.');
+            fnavigation1bar(1);
+        }
+
+        function showCustomModal(title, text) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalBody').innerText = text;
+            const modal = document.getElementById('customModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('opacity-100'), 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            modal.classList.remove('opacity-100');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        function toggleUserMenu() {
+            showCustomModal('حساب المستخدم', 'مرحباً بك في منصة ماتستناش الذكية لحجز الدور الحظي.');
+        }
+
+        const AppSettings = {
+            defaults: { language: 'ar', theme: 'light', fontSize: 'medium' },
+            storageKey: 'matstanash_app_settings',
+            getAll: function () {
+                try {
+                    const saved = localStorage.getItem(this.storageKey);
+                    return saved ? JSON.parse(saved) : this.defaults;
+                } catch (e) { return this.defaults; }
+            },
+            set: function (key, val) {
+                const s = this.getAll();
+                s[key] = val;
+                localStorage.setItem(this.storageKey, JSON.stringify(s));
+                this.applySettings();
+            },
+            reset: function () {
+                localStorage.setItem(this.storageKey, JSON.stringify(this.defaults));
+                this.applySettings();
+            },
+            applySettings: function () {
+                const s = this.getAll();
+                if (s.theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+
+                const fontMap = { 'small': '13px', 'medium': '15px', 'large': '17px' };
+                document.body.style.fontSize = fontMap[s.fontSize] || '15px';
+            }
+        };
+
+        function updatePageLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+        }
+    </script>
+</body>
+
+</html>

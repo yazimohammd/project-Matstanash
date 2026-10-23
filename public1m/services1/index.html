@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - ماتستناش</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+    <main>
+        <div class="welcome-section active" id="w-s">
+
+            <h1>الصفحة الرئسية</h1>
+            <a class="register-link" href="services.html">تسجيل مؤسسة جديدة</a>
+
+            <div id="foundation-login-form" class="foundation-login-form">
+                <h2>تسجيل الدخول إلى المؤسسة</h2>
+                <label for="foundation-username">اسم المستخدم</label>
+                <input type="text" id="foundation-username" required>
+                <label for="foundation-password">كلمة المرور</label>
+                <input type="password" id="foundation-password" required>
+                <button type="button" id="foundation-login-button">دخول</button>
+                <p id="login-message" role="alert"></p>
+            </div>
+
+        </div>
+
+        <div class="protected-content " id="protected-content">
+            <!-- بيانات المؤسسة -->
+
+            
+
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon">⚙️</div>
+                    <div class="header-icon">🔔</div>
+                    <div class="header-icon">👤</div>
+                </div>
+                <div class="header-title">
+                    <h1>لوحة التحكم الرئيسية</h1>
+                    <p>حرّا تحكم سهلة وسريعة في إدارة المؤسسة</p>
+                </div>
+                <div class="logo">ماتستناش</div>
+            </div>
+
+            <div class="queue-number" style="display: flex;justify-content: center; align-items: center; font-size: 20px; gap: 20PX;">
+                <div style="padding: 5px; background: rgba(255, 255, 255, 0.96); border-radius: 10px; width: 300px;box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);"> <p>الرقم الحالي</p> <span id="idqueue-number">100000</span> </div>
+                <div style="padding: 5px; background: rgba(255, 255, 255, 0.96); border-radius: 10px; width: 300px;box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);"> <p>الرقم المنتظر</p><span id="idqueue-number-w">10000000000</span> </div>
+            </div>
+            <div style="font-size: 30px;">
+                <button style="padding: 5px; background: rgba(255, 255, 255, 0.96); border-radius: 10px; width: 100px;box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);" onclick="nextQueuenumber(true)">التالي</button>
+                <button style="padding: 5px; background: rgba(255, 255, 255, 0.96); border-radius: 10px; width: 100px;box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);" onclick="nextQueuenumber(false)">العودة</button>
+            </div>
+
+            <!-- Main Container -->
+            <div class="container">
+                <!-- Content Area -->
+                <div class="content">
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-label">وقت الإنتظار</div>
+                            <div class="stat-number">18</div>
+                            <div class="stat-subtitle">↑ 2 دقيقة من الأمس</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-label">نسبة الرضا</div>
+                            <div class="stat-number">45</div>
+                            <div class="stat-subtitle">↑ تقل دقيقة من الأمس</div>
+                        </div>
+
+                        <div class="stat-card icon-blue highlight">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-label">الطلبات الجديدة</div>
+                            <div class="stat-number">A023</div>
+                            <div class="stat-subtitle">↑ جديد</div>
+                        </div>
+
+                        <div class="stat-card icon-yellow highlight">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-label">عدد الزوار</div>
+                            <div class="stat-number">1,428</div>
+                            <div class="stat-subtitle">↑ 230 زيارة جديدة</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts and Tables -->
+                    <div class="section-grid">
+                        <!-- Chart Section -->
+                        <div class="section">
+                            <div class="section-title">حركة المشاهدات خلال ساعات المسل</div>
+                            <div class="chart-placeholder">
+                                <div class="chart-bar light" style="height: 60%;"></div>
+                                <div class="chart-bar" style="height: 85%;"></div>
+                                <div class="chart-bar" style="height: 75%;"></div>
+                                <div class="chart-bar light" style="height: 65%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Table Section -->
+                        <div class="section">
+                            <div class="section-title">جدول المشاهدات في الوقت الفعلي</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>الحالة</th>
+                                        <th>عدد المشاهدات</th>
+                                        <th>المدة</th>
+                                        <th>رقم الطلب</th>
+                                        <th>اسم العميل</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="status-badge">✓ مقبول</span></td>
+                                        <td>4 / 5</td>
+                                        <td>حقيقي 18</td>
+                                        <td>104</td>
+                                        <td>محمد الحسيني</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-badge">✓ مقبول</span></td>
+                                        <td>2 / 3</td>
+                                        <td>حقيقي 15</td>
+                                        <td>21</td>
+                                        <td>عمليات خاصة</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-badge">✓ مقبول</span></td>
+                                        <td>5 / 5</td>
+                                        <td>حقيقي 12</td>
+                                        <td>10</td>
+                                        <td>قسم خاص</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Alert Section -->
+                    <div class="alert-section">
+                        <div class="section-title">أهم التعليقات</div>
+                        <div class="alert-box">
+                            ⚠️ لاحظنا أن هناك تأخير في خلال الساعات الثالثة وقد تكون السبب نقص عدد الموظفين
+                        </div>
+                        <div class="alert-box">
+                            🔔 إجراء مهم - يجب تحديث النظام خلال هذا الأسبوع حسب خطة الصيانة الدورية
+                        </div>
+                        <div class="alert-box">
+                            ℹ️ تم اكتشاف خلل صغير في عملية الدفع وسيتم إصلاحه قريبا
+                        </div>
+                    </div>
+
+                    <!-- Devices Section -->
+                    <div class="section">
+                        <div class="section-title">جاهة الأجهزة</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الحالة</th>
+                                    <th>عدد المشاهدات</th>
+                                    <th>المدة</th>
+                                    <th>اسم الجهاز</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="status-badge">✓ جاهز</span></td>
+                                    <td>2 / 2</td>
+                                    <td>حقيقي 8</td>
+                                    <td>جهاز الحائط بار 1</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="status-badge">✓ جاهز</span></td>
+                                    <td>3 / 3</td>
+                                    <td>حقيقي 9</td>
+                                    <td>الشرقي البرامج</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="status-badge">✓ جاهز</span></td>
+                                    <td>9 / 11</td>
+                                    <td>حقيقي 10</td>
+                                    <td>معدات الموص</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-title">ماتستناش</div>
+
+                    <button class="action-button">
+                        <span>📝</span>
+                        إضافة جديد
+                    </button>
+
+                    <div class="menu-item">
+                        <span>⚙️</span>
+                        <span>الإعدادات العام</span>
+                    </div>
+
+                    <div class="menu-item">
+                        <span>👥</span>
+                        <span>مسؤولي القسم الشامل</span>
+                    </div>
+
+                    <div class="menu-item">
+                        <span>📄</span>
+                        <span>الملفات والأرشيف</span>
+                    </div>
+
+                    <button class="action-button" style="background-color: #0033cc; color: white;">
+                        <span>👤</span>
+                        الحسابات المشروعة
+                    </button>
+
+                    <div class="menu-item">
+                        <span>👤</span>
+                        <span>بيانات حسابي</span>
+                    </div>
+
+                    <div class="menu-item">
+                        <span>🔒</span>
+                        <span>حسابي وكلمة السر</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="script.js"></script>
+
+</body>
+
+</html>

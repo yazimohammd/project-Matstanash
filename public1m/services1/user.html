@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الموظف - ماتستناش</title>
+    <link rel="stylesheet" href="user-styles.css">
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="login-page" class="auth-container">
+        <div class="login-box">
+            <div class="logo-box">
+                <div class="logo">ماتستناش</div>
+                <p>نظام إدارة الموظفين</p>
+            </div>
+
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="employee-id">رقم الموظف</label>
+                    <input type="text" id="employee-id" placeholder="أدخل رقم الموظف" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
+                </div>
+
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">تذكرني</label>
+                </div>
+
+                <button type="submit" class="login-btn">تسجيل الدخول</button>
+
+                <div class="login-info">
+                    <p>بيانات تجريبية:</p>
+                    <small>الموظف: EMP001 | كلمة المرور: 1234</small>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard-page" class="dashboard-hidden">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <button class="header-icon" id="logout-btn">🚪</button>
+                <div class="header-icon">🔔</div>
+                <button class="header-icon" id="profile-btn">👤</button>
+            </div>
+            <div class="header-title">
+                <h1>لوحة تحكم الموظف</h1>
+                <p id="user-name-header">مرحباً بك</p>
+            </div>
+            <div class="logo">ماتستناش</div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="container">
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Employee Info Card -->
+                <div class="info-section">
+                    <div class="info-card">
+                        <div class="info-title">معلومات الموظف</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="label">الاسم:</span>
+                                <span id="emp-name" class="value">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">رقم الموظف:</span>
+                                <span id="emp-id" class="value">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">الإدارة:</span>
+                                <span id="emp-dept" class="value">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">المسمى الوظيفي:</span>
+                                <span id="emp-position" class="value">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">تاريخ التعيين:</span>
+                                <span id="emp-date" class="value">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">حالة التوظيف:</span>
+                                <span id="emp-status" class="value">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards - Read Only -->
+                <div class="stats-section">
+                    <div class="stats-title">إحصائياتي</div>
+                    <div class="stats-grid">
+                        <div class="stat-card read-only">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-label">ساعات العمل</div>
+                            <div class="stat-number" id="work-hours">0</div>
+                            <div class="stat-subtitle">هذا الأسبوع</div>
+                        </div>
+
+                        <div class="stat-card read-only">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-label">المهام المعينة</div>
+                            <div class="stat-number" id="tasks-count">0</div>
+                            <div class="stat-subtitle">مهام قيد الإنجاز</div>
+                        </div>
+
+                        <div class="stat-card read-only">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-label">المهام المنجزة</div>
+                            <div class="stat-number" id="completed-tasks">0</div>
+                            <div class="stat-subtitle">هذا الشهر</div>
+                        </div>
+
+                        <div class="stat-card read-only">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-label">نسبة الإنجاز</div>
+                            <div class="stat-number" id="completion-rate">0%</div>
+                            <div class="stat-subtitle">معدل الأداء</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Section -->
+                <div class="section">
+                    <div class="section-title">مهامي الحالية</div>
+                    <table id="tasks-table">
+                        <thead>
+                            <tr>
+                                <th>الحالة</th>
+                                <th>الأولوية</th>
+                                <th>الموعد النهائي</th>
+                                <th>الوصف</th>
+                                <th>رقم المهمة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="status-badge status-active">قيد الإنجاز</span></td>
+                                <td><span class="priority-high">عالية</span></td>
+                                <td>2024-09-15</td>
+                                <td>إعداد التقرير الشهري</td>
+                                <td>TK001</td>
+                            </tr>
+                            <tr>
+                                <td><span class="status-badge status-pending">معلقة</span></td>
+                                <td><span class="priority-medium">متوسطة</span></td>
+                                <td>2024-09-20</td>
+                                <td>مراجعة المستندات</td>
+                                <td>TK002</td>
+                            </tr>
+                            <tr>
+                                <td><span class="status-badge status-completed">مكتملة</span></td>
+                                <td><span class="priority-low">منخفضة</span></td>
+                                <td>2024-09-10</td>
+                                <td>تحديث قاعدة البيانات</td>
+                                <td>TK003</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Attendance Section -->
+                <div class="section">
+                    <div class="section-title">سجل الحضور</div>
+                    <table id="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>الحالة</th>
+                                <th>وقت الانصراف</th>
+                                <th>وقت الحضور</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="status-badge status-active">حاضر</span></td>
+                                <td>05:00 م</td>
+                                <td>09:00 ص</td>
+                                <td>2024-09-01</td>
+                            </tr>
+                            <tr>
+                                <td><span class="status-badge status-active">حاضر</span></td>
+                                <td>05:00 م</td>
+                                <td>09:00 ص</td>
+                                <td>2024-08-31</td>
+                            </tr>
+                            <tr>
+                                <td><span class="status-badge status-completed">إجازة</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>2024-08-30</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Alerts Section -->
+                <div class="alert-section">
+                    <div class="section-title">الإشعارات</div>
+                    <div class="alert-box alert-info">
+                        ℹ️ تذكير: لديك مهمة مستحقة اليوم بحلول الساعة 5 مساءً
+                    </div>
+                    <div class="alert-box alert-warning">
+                        ⚠️ لم تسجل دخولك بالأمس - يرجى مراجعة سجل الحضور
+                    </div>
+                    <div class="alert-box alert-success">
+                        ✅ تم قبول إجازتك للفترة المطلوبة
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-title">خياراتي</div>
+                
+                <button class="action-button action-button-edit">
+                    <span>📝</span>
+                    تحديث البيانات الشخصية
+                </button>
+
+                <button class="action-button action-button-disabled" disabled>
+                    <span>🔐</span>
+                    إدارة الرواتب
+                </button>
+
+                <button class="action-button action-button-disabled" disabled>
+                    <span>⚙️</span>
+                    إعدادات النظام
+                </button>
+
+                <button class="action-button">
+                    <span>🔑</span>
+                    تغيير كلمة المرور
+                </button>
+
+                <div class="menu-item">
+                    <span>📄</span>
+                    <span>عرض العقد</span>
+                </div>
+
+                <div class="menu-item">
+                    <span>💼</span>
+                    <span>طلب إجازة</span>
+                </div>
+
+                <div class="menu-item">
+                    <span>📞</span>
+                    <span>التواصل مع الموارد البشرية</span>
+                </div>
+
+                <div class="permissions-box">
+                    <div class="permissions-title">الصلاحيات</div>
+                    <div class="permission-item">
+                        <span>✓</span>
+                        <span>عرض بيانات شخصية</span>
+                    </div>
+                    <div class="permission-item">
+                        <span>✓</span>
+                        <span>عرض المهام</span>
+                    </div>
+                    <div class="permission-item">
+                        <span>✗</span>
+                        <span>تعديل الراتب</span>
+                    </div>
+                    <div class="permission-item">
+                        <span>✗</span>
+                        <span>إدارة المستخدمين</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Employee Dashboard Script with Authentication
+
+        // Employee Database (Simulated)
+        const EMPLOYEES = {
+            'EMP001': {
+                id: 'EMP001',
+                name: 'أحمد محمد',
+                password: '1234',
+                department: 'قسم التطوير',
+                position: 'مطور ويب',
+                hireDate: '2020-01-15',
+                status: 'نشط',
+                workHours: 40,
+                tasksCount: 5,
+                completedTasks: 23,
+                completionRate: 92
+            },
+            'EMP002': {
+                id: 'EMP002',
+                name: 'فاطمة علي',
+                password: '1234',
+                department: 'قسم الموارد البشرية',
+                position: 'متخصصة موارد بشرية',
+                hireDate: '2019-06-20',
+                status: 'نشط',
+                workHours: 38,
+                tasksCount: 3,
+                completedTasks: 18,
+                completionRate: 88
+            },
+            'EMP003': {
+                id: 'EMP003',
+                name: 'محمود خالد',
+                password: '1234',
+                department: 'قسم المبيعات',
+                position: 'مدير مبيعات',
+                hireDate: '2018-09-10',
+                status: 'نشط',
+                workHours: 42,
+                tasksCount: 8,
+                completedTasks: 35,
+                completionRate: 95
+            }
+        };
+
+        // Current logged-in user
+        let currentUser = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            } else {
+                showLoginPage();
+            }
+
+            // Setup event listeners
+            setupEventListeners();
+        });
+
+        // Setup all event listeners
+        function setupEventListeners() {
+            // Login form
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+
+            // Logout button
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+
+            // Profile button
+            const profileBtn = document.getElementById('profile-btn');
+            if (profileBtn) {
+                profileBtn.addEventListener('click', handleProfileClick);
+            }
+
+            // Action buttons
+            const actionButtons = document.querySelectorAll('.action-button:not(.action-button-disabled)');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', handleActionButton);
+            });
+
+            // Menu items
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', handleMenuClick);
+            });
+        }
+
+        // Handle login
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const employeeId = document.getElementById('employee-id').value;
+            const password = document.getElementById('password').value;
+
+            // Validate credentials
+            if (EMPLOYEES[employeeId] && EMPLOYEES[employeeId].password === password) {
+                currentUser = EMPLOYEES[employeeId];
+                
+                // Save to localStorage if "Remember me" is checked
+                if (document.getElementById('remember').checked) {
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+
+                showDashboard();
+                showNotification('تم تسجيل الدخول بنجاح!', 'success');
+            } else {
+                showNotification('بيانات الدخول غير صحيحة!', 'error');
+                document.getElementById('password').value = '';
+            }
+        }
+
+        // Show login page
+        function showLoginPage() {
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('dashboard-page').classList.add('dashboard-hidden');
+        }
+
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('dashboard-page').classList.remove('dashboard-hidden');
+
+            // Load employee data
+            loadEmployeeData();
+        }
+
+        // Load and display employee data
+        function loadEmployeeData() {
+            if (!currentUser) return;
+
+            // Update header
+            document.getElementById('user-name-header').textContent = `مرحباً بك، ${currentUser.name}`;
+
+            // Update employee info
+            document.getElementById('emp-name').textContent = currentUser.name;
+            document.getElementById('emp-id').textContent = currentUser.id;
+            document.getElementById('emp-dept').textContent = currentUser.department;
+            document.getElementById('emp-position').textContent = currentUser.position;
+            document.getElementById('emp-date').textContent = formatDate(currentUser.hireDate);
+            document.getElementById('emp-status').textContent = currentUser.status;
+
+            // Update stats
+            document.getElementById('work-hours').textContent = currentUser.workHours;
+            document.getElementById('tasks-count').textContent = currentUser.tasksCount;
+            document.getElementById('completed-tasks').textContent = currentUser.completedTasks;
+            document.getElementById('completion-rate').textContent = currentUser.completionRate + '%';
+        }
+
+        // Handle logout
+        function handleLogout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                showLoginPage();
+                
+                // Reset login form
+                document.getElementById('login-form').reset();
+                showNotification('تم تسجيل الخروج بنجاح', 'success');
+            }
+        }
+
+        // Handle profile click
+        function handleProfileClick() {
+            if (currentUser) {
+                showNotification(`الملف الشخصي: ${currentUser.name} (${currentUser.id})`, 'info');
+            }
+        }
+
+        // Handle action button clicks
+        function handleActionButton(event) {
+            const button = event.currentTarget;
+            const buttonText = button.textContent.trim();
+
+            if (buttonText.includes('تحديث البيانات')) {
+                showNotification('سيتم توجيهك إلى صفحة تحديث البيانات', 'info');
+            } else if (buttonText.includes('تغيير كلمة المرور')) {
+                showPasswordChangeDialog();
+            }
+        }
+
+        // Handle menu item clicks
+        function handleMenuClick(event) {
+            const menuItem = event.currentTarget;
+            const menuText = menuItem.querySelector('span:last-child').textContent.trim();
+
+            if (menuText.includes('عرض العقد')) {
+                showNotification('جاري تحميل العقد...', 'info');
+            } else if (menuText.includes('طلب إجازة')) {
+                showNotification('سيتم توجيهك إلى نموذج طلب الإجازة', 'info');
+            } else if (menuText.includes('التواصل')) {
+                showNotification('سيتم توجيهك إلى صفحة التواصل معنا', 'info');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Remove existing notification if any
+            const existingNotif = document.querySelector('.notification');
+            if (existingNotif) {
+                existingNotif.remove();
+            }
+
+            // Create notification element
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.textContent = message;
+
+            // Style based on type
+            const colors = {
+                'success': '#4caf50',
+                'error': '#f44336',
+                'info': '#2196f3'
+            };
+
+            notif.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: ${colors[type] || '#0033cc'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                font-size: 14px;
+            `;
+
+            document.body.appendChild(notif);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notif.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    notif.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Show password change dialog
+        function showPasswordChangeDialog() {
+            const newPassword = prompt('أدخل كلمة المرور الجديدة:');
+            if (newPassword && newPassword.length >= 4) {
+                currentUser.password = newPassword;
+                showNotification('تم تحديث كلمة المرور بنجاح', 'success');
+            } else if (newPassword) {
+                showNotification('كلمة المرور يجب أن تكون 4 أحرف على الأقل', 'error');
+            }
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'غير محدد';
+            
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('ar-SA', options);
+        }
+    </script>
+</body>
+</html>
